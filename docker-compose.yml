@@ -10,7 +10,7 @@ services:
       - "3307:3306"
     volumes:
       - db_user:/var/lib/mysql
-      - ./mysql-init-user:/docker-entrypoint-initdb.d
+      - ./mysql-init/user:/docker-entrypoint-initdb.d
     restart: always
     networks:
       - neulpoom_network
@@ -24,7 +24,7 @@ services:
       - "3308:3306"
     volumes:
       - db_lecture:/var/lib/mysql
-      - ./mysql-init/mysql-init-lecture:/docker-entrypoint-initdb.d
+      - ./mysql-init/lecture:/docker-entrypoint-initdb.d
     restart: always
     networks:
       - neulpoom_network
@@ -38,7 +38,7 @@ services:
       - "3309:3306"
     volumes:
       - db_coupon:/var/lib/mysql
-      - ./mysql-init-coupon:/docker-entrypoint-initdb.d
+      - ./mysql-init/coupon:/docker-entrypoint-initdb.d
     restart: always
     networks:
       - neulpoom_network
@@ -52,7 +52,7 @@ services:
       - "3310:3306"
     volumes:
       - db_payment:/var/lib/mysql
-      - ./mysql-init-payment:/docker-entrypoint-initdb.d
+      - ./mysql-init/payment:/docker-entrypoint-initdb.d
     restart: always
     networks:
       - neulpoom_network
