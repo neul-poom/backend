@@ -1,51 +1,61 @@
+version: '3.8'
+
 services:
   db_neulpoom_user:
-    image: mysql
+    image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: neulpoom_user
     ports:
       - "3307:3306"
     volumes:
       - db_user:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
+      - ./mysql-init-user:/docker-entrypoint-initdb.d
     restart: always
+    networks:
+      - neulpoom_network
 
   db_neulpoom_lecture:
-    image: mysql
+    image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: neulpoom_lecture
     ports:
       - "3308:3306"
     volumes:
       - db_lecture:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
+      - ./mysql-init/mysql-init-lecture:/docker-entrypoint-initdb.d
     restart: always
+    networks:
+      - neulpoom_network
 
   db_neulpoom_coupon:
-    image: mysql
+    image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: neulpoom_coupon
     ports:
       - "3309:3306"
     volumes:
       - db_coupon:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
+      - ./mysql-init-coupon:/docker-entrypoint-initdb.d
     restart: always
+    networks:
+      - neulpoom_network
 
   db_neulpoom_payment:
-    image: mysql
+    image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: neulpoom_payment
     ports:
       - "3310:3306"
     volumes:
       - db_payment:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d
+      - ./mysql-init-payment:/docker-entrypoint-initdb.d
     restart: always
+    networks:
+      - neulpoom_network
 
 volumes:
   db_user:
@@ -53,3 +63,5 @@ volumes:
   db_coupon:
   db_payment:
 
+networks:
+  neulpoom_network:
