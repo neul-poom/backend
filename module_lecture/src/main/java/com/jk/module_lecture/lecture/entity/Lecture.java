@@ -55,4 +55,10 @@ public class Lecture {
         this.status = true;
     }
 
+    public void update(String title, String description, BigDecimal price) {
+        this.title = title;
+        this.description = description;
+        this.price = price;
+    }
+
 }
