@@ -4,18 +4,12 @@ import com.jk.module_lecture.lecture.controller.dto.request.LectureCreateRequest
 import com.jk.module_lecture.lecture.controller.dto.request.LectureUpdateRequestDto;
 import com.jk.module_lecture.lecture.controller.dto.response.LectureCreateResponseDto;
 import com.jk.module_lecture.lecture.service.LectureService;
-import com.jk.module_lecture.lecture.service.dto.response.LectureDetailResponseDto;
 import com.jk.module_lecture.lecture.service.dto.response.LectureListResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 
