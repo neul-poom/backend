@@ -61,4 +61,9 @@ public class Lecture {
         this.price = price;
     }
 
+    public void deactivate() {
+        this.status = false;
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
