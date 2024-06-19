@@ -80,5 +80,17 @@ public class LectureService {
                 .map(LectureListResponseDto::toDto)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 강의 삭제
+     */
+    @Transactional
+    public void delete(Long lectureId) {
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
+
+        lecture.deactivate();
+        lectureRepository.save(lecture);
+    }
 }
 
