@@ -20,10 +20,10 @@ import java.time.LocalDateTime;
 public class Lecture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "lecture_id", updatable = false) // 컬럼 이름 수정
+    @Column(name = "lecture_id", updatable = false)
     private Long lectureId;
 
-    @Column(name = "title", nullable = false) // nullable = false 추가
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "description")
