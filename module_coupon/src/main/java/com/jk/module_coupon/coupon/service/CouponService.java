@@ -87,7 +87,7 @@ public class CouponService {
      */
     @Transactional(readOnly = true)
     public List<Coupon> listValidCoupons(int page, int size) {
-        return couponRepository.findByExpiresAtAfter(LocalDateTime.now(), PageRequest.of(page - 1, size)).getContent();
+        return couponRepository.findByExpiresAtAfterAndStatusIsTrue(LocalDateTime.now(), PageRequest.of(page - 1, size)).getContent();
     }
 
     /*
@@ -95,7 +95,7 @@ public class CouponService {
      */
     @Transactional(readOnly = true)
     public List<Coupon> listExpiredCoupons(int page, int size) {
-        return couponRepository.findByExpiresAtBefore(LocalDateTime.now(), PageRequest.of(page - 1, size)).getContent();
+        return couponRepository.findByExpiresAtBeforeAndStatusTrue(LocalDateTime.now(), PageRequest.of(page - 1, size)).getContent();
     }
 
 
