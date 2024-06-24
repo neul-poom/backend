@@ -77,12 +77,11 @@ public class Coupon {
         if (expiresAt != null) {
             this.expiresAt = expiresAt;
         }
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void deactivate() {
         this.status = false;
         this.updatedAt = LocalDateTime.now();
     }
-
-
 }
