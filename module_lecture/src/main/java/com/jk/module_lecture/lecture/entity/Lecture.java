@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter // 각 필드의 getter 메소드 자동 생성
 @Entity // 이 클래스가 JPA 엔터티임을 나타냄(데이터 베이 테이블에 매핑됨)
 @Table(name = "lecture") //  엔티티 클래스와 데이터베이스 테이블의 매핑을 명시적으로 정의
-@NoArgsConstructor(access = AccessLevel.PRIVATE) // 기본 생성자 자동 생성
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 자동 생성
 @EntityListeners(AuditingEntityListener.class) // 엔터티 생성, 수정 시간 자동 감지 및 기록
 public class Lecture {
     @Id
