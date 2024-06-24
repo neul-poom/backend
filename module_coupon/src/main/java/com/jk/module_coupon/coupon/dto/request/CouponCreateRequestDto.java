@@ -12,7 +12,7 @@ public record CouponCreateRequestDto (
     @NotNull
     String couponCode,
     @NotNull
-    int discountRate,
+    Integer discountRate,
     Long maxQuantity,
     Long issuedQuantity,
     @NotNull

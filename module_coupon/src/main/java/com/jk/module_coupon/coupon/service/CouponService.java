@@ -4,13 +4,16 @@ import com.jk.module_coupon.common.exception.CustomException;
 import com.jk.module_coupon.common.exception.ErrorCode;
 import com.jk.module_coupon.coupon.domain.Coupon;
 import com.jk.module_coupon.coupon.dto.request.CouponCreateRequestDto;
+import com.jk.module_coupon.coupon.dto.request.CouponUpdateRequestDto;
 import com.jk.module_coupon.coupon.repository.CouponRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,4 +50,27 @@ public class CouponService {
                 () -> new CustomException(ErrorCode.COUPON_NOT_FOUND)
         );
     }
+
+    /*
+     * 쿠폰 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<Coupon> listCoupons(int page, int size) {
+        return couponRepository.findAll(PageRequest.of(page - 1, size)).getContent();
+    }
+
+    /*
+     * 쿠폰 수정
+     */
+    @Transactional
+    public void updateCoupon(Long couponId, CouponUpdateRequestDto request) {
+        Coupon coupon = couponRepository.findById(couponId).orElseThrow(
+                () -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+
+        coupon.update(request.name(), request.couponCode(), request.discountRate(), request.maxQuantity(), request.issuedQuantity(), request.expiresAt());
+
+        couponRepository.save(coupon);
+    }
+
+
 }

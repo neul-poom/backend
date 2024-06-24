@@ -27,7 +27,7 @@ public class Coupon {
     private String couponCode;
 
     @Column(name = "discount_rate", nullable = false)
-    private int discountRate;
+    private Integer discountRate;
 
     @Column(name = "max_quantity")
     private Long maxQuantity;
@@ -43,13 +43,31 @@ public class Coupon {
     private LocalDateTime expiresAt;
 
     @Builder
-    public Coupon(String name, String couponCode, int discountRate, Long maxQuantity, Long issuedQuantity, LocalDateTime expiresAt) {
+    public Coupon(String name, String couponCode, Integer discountRate, Long maxQuantity, Long issuedQuantity, LocalDateTime expiresAt) {
         this.name = name;
         this.couponCode = couponCode;
         this.discountRate = discountRate;
         this.maxQuantity = maxQuantity;
         this.issuedQuantity = issuedQuantity;
         this.expiresAt = expiresAt;
+    }
+
+    public void update(String name, String couponCode, Integer discountRate, Long maxQuantity, Long issuedQuantity, LocalDateTime expiresAt) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (couponCode != null) {
+            this.couponCode = couponCode;
+        }
+        if (discountRate != null) {
+            this.discountRate = discountRate;
+        }
+        if (maxQuantity != null) {
+            this.maxQuantity = maxQuantity;
+        }
+        if (expiresAt != null) {
+            this.expiresAt = expiresAt;
+        }
     }
 
 
