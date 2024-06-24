@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -39,8 +40,15 @@ public class Coupon {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at", nullable = false)
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
+
+    @Column(name = "status", nullable = false)
+    private Boolean status = true;
 
     @Builder
     public Coupon(String name, String couponCode, Integer discountRate, Long maxQuantity, Long issuedQuantity, LocalDateTime expiresAt) {
@@ -50,6 +58,7 @@ public class Coupon {
         this.maxQuantity = maxQuantity;
         this.issuedQuantity = issuedQuantity;
         this.expiresAt = expiresAt;
+        this.status = true;
     }
 
     public void update(String name, String couponCode, Integer discountRate, Long maxQuantity, Long issuedQuantity, LocalDateTime expiresAt) {
@@ -68,6 +77,11 @@ public class Coupon {
         if (expiresAt != null) {
             this.expiresAt = expiresAt;
         }
+    }
+
+    public void deactivate() {
+        this.status = false;
+        this.updatedAt = LocalDateTime.now();
     }
 
 
