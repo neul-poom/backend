@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Repository
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
     // 유효한 쿠폰 목록 조회
-    Page<Coupon> findByExpiresAtAfter(LocalDateTime dateTime, Pageable pageable);
+    Page<Coupon> findByExpiresAtAfterAndStatusIsTrue(LocalDateTime dateTime, Pageable pageable);
     // 만료된 쿠폰 목록 조회
-    Page<Coupon> findByExpiresAtBefore(LocalDateTime dateTime, Pageable pageable);
+    Page<Coupon> findByExpiresAtBeforeAndStatusTrue(LocalDateTime dateTime, Pageable pageable);
 }
