@@ -76,7 +76,10 @@ public class CouponService {
      */
     @Transactional
     public void deleteCoupon(Long couponId) {
-        couponRepository.deleteById(couponId);
+        Coupon coupon = couponRepository.findById(couponId).orElseThrow(
+                () -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+        coupon.deactivate();
+        couponRepository.save(coupon);
     }
 
     /*
