@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -70,6 +69,30 @@ public class CouponService {
         coupon.update(request.name(), request.couponCode(), request.discountRate(), request.maxQuantity(), request.issuedQuantity(), request.expiresAt());
 
         couponRepository.save(coupon);
+    }
+
+    /*
+     * 쿠폰 삭제
+     */
+    @Transactional
+    public void deleteCoupon(Long couponId) {
+        couponRepository.deleteById(couponId);
+    }
+
+    /*
+     * 유효한 쿠폰 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<Coupon> listValidCoupons(int page, int size) {
+        return couponRepository.findByExpiresAtAfter(LocalDateTime.now(), PageRequest.of(page - 1, size)).getContent();
+    }
+
+    /*
+     * 만료된 쿠폰 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<Coupon> listExpiredCoupons(int page, int size) {
+        return couponRepository.findByExpiresAtBefore(LocalDateTime.now(), PageRequest.of(page - 1, size)).getContent();
     }
 
 

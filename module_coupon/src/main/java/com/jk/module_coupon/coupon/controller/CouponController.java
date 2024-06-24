@@ -6,13 +6,11 @@ import com.jk.module_coupon.coupon.dto.request.CouponUpdateRequestDto;
 import com.jk.module_coupon.coupon.service.CouponService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,6 +53,33 @@ public class CouponController {
     public ResponseEntity<Void> updateCoupon(@PathVariable Long couponId, @Valid @RequestBody CouponUpdateRequestDto request) {
         couponService.updateCoupon(couponId, request);
         return ResponseEntity.ok().build();
+    }
+
+    /*
+     * 쿠폰 삭제
+     */
+    @DeleteMapping("/{couponId}")
+    public ResponseEntity<Void> deleteCoupon(@PathVariable Long couponId) {
+        couponService.deleteCoupon(couponId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /*
+     * 유효한 쿠폰 목록 조회
+     */
+    @GetMapping("/valid")
+    public ResponseEntity<List<Coupon>> listValidCoupons(@RequestParam int page, @RequestParam int size) {
+        List<Coupon> coupons = couponService.listValidCoupons(page, size);
+        return ResponseEntity.ok(coupons);
+    }
+
+    /*
+     * 만료된 쿠폰 목록 조회
+     */
+    @GetMapping("/expired")
+    public ResponseEntity<List<Coupon>> listExpiredCoupons(@RequestParam int page, @RequestParam int size) {
+        List<Coupon> coupons = couponService.listExpiredCoupons(page, size);
+        return ResponseEntity.ok(coupons);
     }
 
 
