@@ -1,4 +1,4 @@
-package com.jk.module_lecture.like.controller.dto.request;
+package com.jk.module_lecture.like.dto.request;
 
 import lombok.Builder;
 
