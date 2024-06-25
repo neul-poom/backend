@@ -4,9 +4,10 @@ import com.jk.module_lecture.common.exception.CustomException;
 import com.jk.module_lecture.common.exception.ErrorCode;
 import com.jk.module_lecture.lecture.entity.Lecture;
 import com.jk.module_lecture.lecture.repository.LectureRepository;
+import com.jk.module_lecture.review.dto.response.ReviewListResponseDto;
+import com.jk.module_lecture.review.dto.response.ReviewResponseDto;
 import com.jk.module_lecture.review.entity.Review;
 import com.jk.module_lecture.review.repository.ReviewRepository;
-import com.jk.module_lecture.review.service.dto.ReviewListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class ReviewService {
      * 리뷰 생성
      */
     @Transactional
-    public Long createReview(Long lectureId, Long userId, String content, Integer star) {
+    public ReviewResponseDto createReview(Long lectureId, Long userId, String content, Integer star) {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
 
@@ -37,7 +38,7 @@ public class ReviewService {
                 .build();
 
         Review savedReview = reviewRepository.save(review);
-        return savedReview.getReviewId();
+        return new ReviewResponseDto(savedReview.getReviewId(), lectureId, userId, content, star, savedReview.getStatus());
     }
 
     /**
@@ -69,20 +70,20 @@ public class ReviewService {
     /**
      * 특정 강의에 대한 모든 리뷰 조회
      */
-    public List<ReviewListDto> getReviewsByLectureId(Long lectureId) {
+    public List<ReviewListResponseDto> getReviewsByLectureId(Long lectureId) {
         List<Review> reviews = reviewRepository.findByLecture_LectureId(lectureId);
         return reviews.stream()
-                .map(ReviewListDto::toDto)
+                .map(ReviewListResponseDto::toDto)
                 .collect(Collectors.toList());
     }
 
     /**
      * 특정 사용자가 작성한 모든 리뷰 조회
      */
-    public List<ReviewListDto> getReviewsByUserId(Long userId) {
+    public List<ReviewListResponseDto> getReviewsByUserId(Long userId) {
         List<Review> reviews = reviewRepository.findByUserId(userId);
         return reviews.stream()
-                .map(ReviewListDto::toDto)
+                .map(ReviewListResponseDto::toDto)
                 .collect(Collectors.toList());
     }
 }
