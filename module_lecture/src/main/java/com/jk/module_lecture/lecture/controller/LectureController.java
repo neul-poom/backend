@@ -7,6 +7,8 @@ import com.jk.module_lecture.lecture.dto.response.*;
 import com.jk.module_lecture.lecture.service.LectureService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,11 +63,11 @@ public class LectureController {
     }
 
     /**
-     * 전체 강의 조회
+     * 전체 강의 조회 (페이징)
      */
     @GetMapping
-    public ResponseEntity<ApiResponseDto<List<LectureListResponseDto>>> getAllLectures() {
-        List<LectureListResponseDto> lectures = lectureService.getAllLectures();
+    public ResponseEntity<ApiResponseDto<Page<LectureListResponseDto>>> getAllLectures(Pageable pageable) {
+        Page<LectureListResponseDto> lectures = lectureService.getAllLectures(pageable);
         return ResponseEntity.ok().body(new ApiResponseDto<>(HttpStatus.OK, "전체 강의 조회", lectures));
     }
 
