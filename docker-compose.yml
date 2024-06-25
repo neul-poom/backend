@@ -57,6 +57,20 @@ services:
     networks:
       - neulpoom_network
 
+  db_neulpoom_lecture_resource:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: neulpoom_lecture_resource
+    ports:
+      - "3311:3306"
+    volumes:
+      - db_payment:/var/lib/mysql
+      - ./mysql-init/payment:/docker-entrypoint-initdb.d
+    restart: always
+    networks:
+      - neulpoom_network
+
 volumes:
   db_user:
   db_lecture:
