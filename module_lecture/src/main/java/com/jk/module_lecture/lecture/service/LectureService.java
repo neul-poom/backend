@@ -2,10 +2,9 @@ package com.jk.module_lecture.lecture.service;
 
 import com.jk.module_lecture.common.exception.CustomException;
 import com.jk.module_lecture.common.exception.ErrorCode;
+import com.jk.module_lecture.lecture.dto.response.*;
 import com.jk.module_lecture.lecture.entity.Lecture;
 import com.jk.module_lecture.lecture.repository.LectureRepository;
-import com.jk.module_lecture.lecture.service.dto.response.LectureListResponseDto;
-import com.jk.module_lecture.lecture.service.dto.response.LectureDetailResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class LectureService {
      * 강의 등록
      */
     @Transactional
-    public Long create(String title, String description, Long teacherId, BigDecimal price) {
+    public LectureCreateResponseDto create(String title, String description, Long teacherId, BigDecimal price) {
         Lecture lecture = Lecture.builder()
                 .title(title)
                 .description(description)
@@ -35,27 +34,36 @@ public class LectureService {
 
         Lecture savedLecture = lectureRepository.save(lecture);
 
-        return savedLecture.getLectureId();
+        return LectureCreateResponseDto.builder()
+                .lectureId(savedLecture.getLectureId())
+                .title(savedLecture.getTitle())
+                .description(savedLecture.getDescription())
+                .teacherId(savedLecture.getTeacherId())
+                .price(savedLecture.getPrice())
+                .build();
     }
-
     /**
      * 강의 수정
      */
     @Transactional
-    public void update(Long lectureId, String title, String description, Long teacherId, BigDecimal price) {
+    public LectureUpdateResponseDto update(Long lectureId, String title, String description, Long teacherId, BigDecimal price) {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
 
         checkLectureOwner(teacherId, lecture);
 
         lecture.update(title, description, price);
+        lectureRepository.save(lecture);
+
+        return LectureUpdateResponseDto.toDto(lecture);
     }
 
     /**
      * 강의 소유자 확인
      */
-    private void checkLectureOwner(Long teacherId, Lecture lecture) {
-        if (!teacherId.equals(lecture.getTeacherId())) {
+    @Transactional
+    public void checkLectureOwner(Long teacherId, Lecture lecture) {
+        if (!lecture.getTeacherId().equals(teacherId)) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
     }
@@ -85,12 +93,14 @@ public class LectureService {
      * 강의 삭제
      */
     @Transactional
-    public void delete(Long lectureId) {
+    public LectureDeleteResponseDto delete(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
 
         lecture.deactivate();
         lectureRepository.save(lecture);
+
+        return LectureDeleteResponseDto.toDto(lecture);
     }
 }
 
