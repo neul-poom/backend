@@ -2,6 +2,7 @@ package com.jk.module_lecture.lecture.controller;
 
 import com.jk.module_lecture.common.dto.ApiResponseDto;
 import com.jk.module_lecture.lecture.dto.request.LectureCreateRequestDto;
+import com.jk.module_lecture.lecture.dto.request.LectureUpdateRequestDto;
 import com.jk.module_lecture.lecture.dto.response.*;
 import com.jk.module_lecture.lecture.service.LectureService;
 import jakarta.validation.Valid;
@@ -39,7 +40,7 @@ public class LectureController {
     @PutMapping("/{lectureId}")
     public ResponseEntity<ApiResponseDto<LectureUpdateResponseDto>> update(
             @PathVariable Long lectureId,
-            @Valid @RequestBody LectureCreateRequestDto request
+            @Valid @RequestBody LectureUpdateRequestDto request
     ) {
         LectureUpdateResponseDto responseDto = lectureService.update(lectureId, request.title(), request.description(), request.teacherId(), request.price());
 
