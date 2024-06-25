@@ -7,6 +7,8 @@ import com.jk.module_lecture.lecture.entity.Lecture;
 import com.jk.module_lecture.lecture.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,14 +81,11 @@ public class LectureService {
     }
 
     /**
-     * 전체 강의 조회
+     * 전체 강의 조회 (페이징)
      */
-    public List<LectureListResponseDto> getAllLectures() {
-        List<Lecture> lectures = lectureRepository.findAll();
-
-        return lectures.stream()
-                .map(LectureListResponseDto::toDto)
-                .collect(Collectors.toList());
+    public Page<LectureListResponseDto> getAllLectures(Pageable pageable) {
+        Page<Lecture> lecturePage = lectureRepository.findAll(pageable);
+        return lecturePage.map(LectureListResponseDto::toDto);
     }
 
     /**
