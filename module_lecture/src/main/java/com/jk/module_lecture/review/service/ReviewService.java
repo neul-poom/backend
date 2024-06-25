@@ -9,6 +9,8 @@ import com.jk.module_lecture.review.dto.response.ReviewResponseDto;
 import com.jk.module_lecture.review.entity.Review;
 import com.jk.module_lecture.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,22 +70,18 @@ public class ReviewService {
     }
 
     /**
-     * 특정 강의에 대한 모든 리뷰 조회
+     * 특정 강의에 대한 모든 리뷰 조회 (페이징)
      */
-    public List<ReviewListResponseDto> getReviewsByLectureId(Long lectureId) {
-        List<Review> reviews = reviewRepository.findByLecture_LectureId(lectureId);
-        return reviews.stream()
-                .map(ReviewListResponseDto::toDto)
-                .collect(Collectors.toList());
+    public Page<ReviewListResponseDto> getReviewsByLectureId(Long lectureId, Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findByLecture_LectureId(lectureId, pageable);
+        return reviews.map(ReviewListResponseDto::toDto);
     }
 
     /**
-     * 특정 사용자가 작성한 모든 리뷰 조회
+     * 특정 사용자가 작성한 모든 리뷰 조회 (페이징)
      */
-    public List<ReviewListResponseDto> getReviewsByUserId(Long userId) {
-        List<Review> reviews = reviewRepository.findByUserId(userId);
-        return reviews.stream()
-                .map(ReviewListResponseDto::toDto)
-                .collect(Collectors.toList());
+    public Page<ReviewListResponseDto> getReviewsByUserId(Long userId, Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findByUserId(userId, pageable);
+        return reviews.map(ReviewListResponseDto::toDto);
     }
 }
