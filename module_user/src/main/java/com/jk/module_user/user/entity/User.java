@@ -51,7 +51,6 @@ public class User {
     @Column(name = "status", columnDefinition = "varchar(1) default 'Y'") // soft delete
     private String status;
 
-    @Builder
     public User(String username, String password, String email, UserRoleEnum role, String status, String profileImg, String balance) {
         this.username = username;
         this.password = password;
