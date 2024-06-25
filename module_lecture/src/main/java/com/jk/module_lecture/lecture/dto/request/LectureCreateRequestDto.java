@@ -1,4 +1,4 @@
-package com.jk.module_lecture.lecture.controller.dto.request;
+package com.jk.module_lecture.lecture.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

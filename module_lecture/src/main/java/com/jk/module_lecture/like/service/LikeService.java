@@ -4,6 +4,7 @@ import com.jk.module_lecture.common.exception.CustomException;
 import com.jk.module_lecture.common.exception.ErrorCode;
 import com.jk.module_lecture.lecture.entity.Lecture;
 import com.jk.module_lecture.lecture.repository.LectureRepository;
+import com.jk.module_lecture.like.dto.response.LikeResponseDto;
 import com.jk.module_lecture.like.entity.Like;
 import com.jk.module_lecture.like.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +23,23 @@ public class LikeService {
      * 좋아요 요청(토글 방식)
      */
     @Transactional
-    public void toggleLike(Long userId, Long lectureId) {
+    public LikeResponseDto toggleLike(Long userId, Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
 
-        likeRepository.findByUserIdAndLecture_LectureId(userId, lectureId)
-                .ifPresentOrElse(
-                        likeRepository::delete,
-                        () -> likeRepository.save(Like.builder()
-                                .userId(userId)
-                                .lecture(lecture)
-                                .build())
-                );
+        boolean isLiked = likeRepository.findByUserIdAndLecture_LectureId(userId, lectureId)
+                .map(like -> {
+                    likeRepository.delete(like);
+                    return false;
+                })
+                .orElseGet(() -> {
+                    likeRepository.save(Like.builder()
+                            .userId(userId)
+                            .lecture(lecture)
+                            .build());
+                    return true;
+                });
+
+        return new LikeResponseDto(userId, lectureId, isLiked);
     }
 }
