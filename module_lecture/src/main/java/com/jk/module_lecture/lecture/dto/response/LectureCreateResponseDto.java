@@ -1,7 +1,6 @@
-package com.jk.module_lecture.lecture.controller.dto.response;
+package com.jk.module_lecture.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.jk.module_lecture.lecture.service.dto.response.LectureDetailResponseDto;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -9,6 +8,7 @@ import java.math.BigDecimal;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record LectureCreateResponseDto(
+        Long lectureId,
         String title,
         String description,
         Long teacherId,
@@ -16,6 +16,7 @@ public record LectureCreateResponseDto(
 ) {
     public static LectureCreateResponseDto dtoToResponseDto(LectureDetailResponseDto lectureDetailResponseDto) {
         return LectureCreateResponseDto.builder()
+                .lectureId(lectureDetailResponseDto.lectureId())
                 .title(lectureDetailResponseDto.title())
                 .description(lectureDetailResponseDto.description())
                 .teacherId(lectureDetailResponseDto.teacherId())

@@ -1,12 +1,12 @@
 package com.jk.module_lecture.lecture.controller;
 
-import com.jk.module_lecture.lecture.controller.dto.request.LectureCreateRequestDto;
-import com.jk.module_lecture.lecture.controller.dto.request.LectureUpdateRequestDto;
-import com.jk.module_lecture.lecture.controller.dto.response.LectureCreateResponseDto;
+import com.jk.module_lecture.common.dto.ApiResponseDto;
+import com.jk.module_lecture.lecture.dto.request.LectureCreateRequestDto;
+import com.jk.module_lecture.lecture.dto.response.*;
 import com.jk.module_lecture.lecture.service.LectureService;
-import com.jk.module_lecture.lecture.service.dto.response.LectureListResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,56 +23,57 @@ public class LectureController {
      * 강의 등록
      */
     @PostMapping
-    public ResponseEntity<Void> create(
+    public ResponseEntity<ApiResponseDto<LectureCreateResponseDto>> create(
             @Valid @RequestBody LectureCreateRequestDto request
     ) {
-        Long lectureId =
-                lectureService.create(request.title(), request.description(), request.teacherId(),
-                        request.price());
+        LectureCreateResponseDto responseDto = lectureService.create(request.title(), request.description(), request.teacherId(), request.price());
 
-        return ResponseEntity.created(URI.create("api/v1/lectures/" + lectureId)).build();
+        return ResponseEntity
+                .created(URI.create("api/v1/lectures/" + responseDto.lectureId()))
+                .body(new ApiResponseDto<>(HttpStatus.CREATED, "강의가 등록됐습니다.", responseDto));
     }
 
     /**
      * 강의 수정
      */
-    @PatchMapping("/{id}")
-    public ResponseEntity<Void> update(
-            @PathVariable(name = "id") Long lectureId,
-            @Valid @RequestBody LectureUpdateRequestDto request
-            ) {
-        lectureService.update(lectureId, request.title(), request.description(), request.teacherId(),
-                request.price());
-        return ResponseEntity.ok().build();
+    @PutMapping("/{lectureId}")
+    public ResponseEntity<ApiResponseDto<LectureUpdateResponseDto>> update(
+            @PathVariable Long lectureId,
+            @Valid @RequestBody LectureCreateRequestDto request
+    ) {
+        LectureUpdateResponseDto responseDto = lectureService.update(lectureId, request.title(), request.description(), request.teacherId(), request.price());
+
+        return ResponseEntity
+                .ok()
+                .body(new ApiResponseDto<>(HttpStatus.OK, "강의가 업데이트됐습니다.", responseDto));
     }
 
     /**
      * 강의 상세정보 조회
      */
     @GetMapping("/{lectureId}")
-    public ResponseEntity<LectureCreateResponseDto> getLectureInfoById(
+    public ResponseEntity<ApiResponseDto<LectureDetailResponseDto>> getLectureInfoById(
             @PathVariable(name = "lectureId") Long lectureId
     ) {
-        LectureCreateResponseDto response =
-                LectureCreateResponseDto.dtoToResponseDto(lectureService.getLectureInfoById(lectureId));
-        return ResponseEntity.ok().body(response);
+        LectureDetailResponseDto response = lectureService.getLectureInfoById(lectureId);
+        return ResponseEntity.ok().body(new ApiResponseDto<>(HttpStatus.OK, "강의 상세정보 조회", response));
     }
 
     /**
      * 전체 강의 조회
      */
     @GetMapping
-    public ResponseEntity<List<LectureListResponseDto>> getAllLectures() {
+    public ResponseEntity<ApiResponseDto<List<LectureListResponseDto>>> getAllLectures() {
         List<LectureListResponseDto> lectures = lectureService.getAllLectures();
-        return ResponseEntity.ok(lectures);
+        return ResponseEntity.ok().body(new ApiResponseDto<>(HttpStatus.OK, "전체 강의 조회", lectures));
     }
 
     /**
      * 강의 삭제
      */
     @DeleteMapping("/{lectureId}")
-    public ResponseEntity<Void> deleteLecture(@PathVariable Long lectureId) {
-        lectureService.delete(lectureId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ApiResponseDto<LectureDeleteResponseDto>> deleteLecture(@PathVariable Long lectureId) {
+        LectureDeleteResponseDto responseDto = lectureService.delete(lectureId);
+        return ResponseEntity.ok().body(new ApiResponseDto<>(HttpStatus.OK, "강의가 삭제됐습니다.", responseDto));
     }
 }
