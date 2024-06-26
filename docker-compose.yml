@@ -65,8 +65,8 @@ services:
     ports:
       - "3311:3306"
     volumes:
-      - db_payment:/var/lib/mysql
-      - ./mysql-init/payment:/docker-entrypoint-initdb.d
+      - db_lecture_resource:/var/lib/mysql
+      - ./mysql-init/lecture_resource:/docker-entrypoint-initdb.d
     restart: always
     networks:
       - neulpoom_network
@@ -76,6 +76,7 @@ volumes:
   db_lecture:
   db_coupon:
   db_payment:
+  db_lecture_resource:
 
 networks:
   neulpoom_network:
