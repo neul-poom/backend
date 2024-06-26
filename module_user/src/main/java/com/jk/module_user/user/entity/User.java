@@ -1,6 +1,5 @@
 package com.jk.module_user.user.entity;
 
-import com.jk.module_user.user.dto.request.SignupRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

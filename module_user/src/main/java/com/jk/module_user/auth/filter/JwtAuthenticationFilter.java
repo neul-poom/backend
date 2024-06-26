@@ -3,7 +3,7 @@ package com.jk.module_user.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jk.module_user.auth.jwt.JwtUtil;
-import com.jk.module_user.user.dto.request.LoginRequestDto;
+import com.jk.module_user.user.dto.request.UserLoginRequestDto;
 import com.jk.module_user.user.entity.UserRoleEnum;
 import com.jk.module_user.user.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
@@ -23,13 +23,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        setFilterProcessesUrl("/api/v1/login");
+        setFilterProcessesUrl("/api/v1/users/login");
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+            UserLoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), UserLoginRequestDto.class);
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
