@@ -13,12 +13,16 @@ public class FilterConfig {
         return routeLocatorBuilder.routes()
                 .route(r -> r.path("/api/v1/users/**")
                         .uri("http://localhost:8081"))
-                .route(r -> r.path("/api/v1/lectures/**")
-                        .uri("http://localhost:8082"))
                 .route(r -> r.path("/api/v1/coupons/**")
                         .uri("http://localhost:8083"))
                 .route(r -> r.path("/api/v1/payments/**")
                         .uri("http://localhost:8084"))
+                .route(r -> r.path("/api/v1/lectures/notes/**")
+                        .uri("http://localhost:8085"))
+                .route(r -> r.path("/api/v1/lectures/multimedia/**")
+                        .uri("http://localhost:8085"))
+                .route(r -> r.path("/api/v1/lectures/**")
+                        .uri("http://localhost:8082"))
                 .build();
     }
 }
