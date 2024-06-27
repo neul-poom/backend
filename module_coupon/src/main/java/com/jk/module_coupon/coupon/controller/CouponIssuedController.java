@@ -46,4 +46,13 @@ public class CouponIssuedController {
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "특정 쿠폰의 발급 내역입니다.", issueds));
     }
 
+    /*
+     * 발급된 쿠폰 취소
+     */
+    @DeleteMapping("/{issuedId}")
+    public ResponseEntity<ApiResponseDto<Void>> cancelCouponIssued(@PathVariable Long issuedId) {
+        couponIssuedService.cancelCouponIssued(issuedId);
+        return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "쿠폰 발급이 취소되었습니다.", null));
+    }
+
 }

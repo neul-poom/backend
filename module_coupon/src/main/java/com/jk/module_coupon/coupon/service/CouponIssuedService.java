@@ -64,4 +64,15 @@ public class CouponIssuedService {
         List<CouponIssued> issueds = couponIssuedRepository.findByCoupon_CouponId(couponId);
         return issueds.stream().map(CouponIssuedResponseDto::fromEntity).collect(Collectors.toList());
     }
+
+    /*
+     * 발급된 쿠폰 취소
+     */
+    @Transactional
+    public void cancelCouponIssued(Long issuedId) {
+        if (!couponIssuedRepository.existsById(issuedId)) {
+            throw new CustomException(ErrorCode.ISSUEDID_NOT_FOUND);
+        }
+        couponIssuedRepository.deleteById(issuedId);
+    }
 }
