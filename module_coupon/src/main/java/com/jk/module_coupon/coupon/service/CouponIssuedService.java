@@ -62,6 +62,9 @@ public class CouponIssuedService {
     @Transactional(readOnly = true)
     public List<CouponIssuedResponseDto> listCouponIssued(Long couponId) {
         List<CouponIssued> issueds = couponIssuedRepository.findByCoupon_CouponId(couponId);
+        if (issueds.isEmpty()) {
+            throw new CustomException(ErrorCode.COUPON_LIST_NOT_FOUND);
+        }
         return issueds.stream().map(CouponIssuedResponseDto::fromEntity).collect(Collectors.toList());
     }
 
