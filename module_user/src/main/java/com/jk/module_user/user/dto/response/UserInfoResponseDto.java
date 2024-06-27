@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserInfoDto {
+public class UserInfoResponseDto {
     String username;
     boolean isAdmin;
 }
