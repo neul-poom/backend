@@ -15,6 +15,8 @@ public class FilterConfig {
                         .uri("http://localhost:8081"))
                 .route(r -> r.path("/api/v1/coupons/**")
                         .uri("http://localhost:8083"))
+                .route(r -> r.path("/api/v1/coupon-issued/**")
+                        .uri("http://localhost:8083"))
                 .route(r -> r.path("/api/v1/payments/**")
                         .uri("http://localhost:8084"))
                 .route(r -> r.path("/api/v1/lectures/notes/**")
