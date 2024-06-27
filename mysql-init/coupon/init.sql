@@ -13,3 +13,11 @@ CREATE TABLE IF NOT EXISTS coupon (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     expires_at DATETIME DEFAULT NULL
 );
+
+CREATE TABLE IF NOT EXISTS coupon_issued (
+    issued_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    coupon_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (coupon_id) REFERENCES coupon(coupon_id)
+);
