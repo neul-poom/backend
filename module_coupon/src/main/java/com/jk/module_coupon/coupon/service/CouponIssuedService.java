@@ -1,5 +1,8 @@
 package com.jk.module_coupon.coupon.service;
 
+import com.jk.module_coupon.common.exception.CustomException;
+import com.jk.module_coupon.common.exception.ErrorCode;
+import com.jk.module_coupon.coupon.domain.Coupon;
 import com.jk.module_coupon.coupon.domain.CouponIssued;
 import com.jk.module_coupon.coupon.dto.request.CouponCreateRequestDto;
 import com.jk.module_coupon.coupon.dto.request.CouponIssuedRequestDto;
@@ -50,6 +53,15 @@ public class CouponIssuedService {
     @Transactional(readOnly = true)
     public List<CouponIssuedResponseDto> listUserCoupons(Long userId) {
         List<CouponIssued> issueds = couponIssuedRepository.findByUserId(userId);
+        return issueds.stream().map(CouponIssuedResponseDto::fromEntity).collect(Collectors.toList());
+    }
+
+    /*
+     * 특정 쿠폰의 발급 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<CouponIssuedResponseDto> listCouponIssued(Long couponId) {
+        List<CouponIssued> issueds = couponIssuedRepository.findByCoupon_CouponId(couponId);
         return issueds.stream().map(CouponIssuedResponseDto::fromEntity).collect(Collectors.toList());
     }
 }

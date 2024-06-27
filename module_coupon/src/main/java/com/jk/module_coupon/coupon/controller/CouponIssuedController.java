@@ -37,4 +37,13 @@ public class CouponIssuedController {
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "유저의 쿠폰 발급 목록입니다.", issueds));
     }
 
+    /*
+     * 특정 쿠폰의 발급 목록 조회
+     */
+    @GetMapping("/coupon/{couponId}")
+    public ResponseEntity<ApiResponseDto<List<CouponIssuedResponseDto>>> listCouponIssued(@PathVariable Long couponId) {
+        List<CouponIssuedResponseDto> issueds = couponIssuedService.listCouponIssued(couponId);
+        return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "특정 쿠폰의 발급 내역입니다.", issueds));
+    }
+
 }
