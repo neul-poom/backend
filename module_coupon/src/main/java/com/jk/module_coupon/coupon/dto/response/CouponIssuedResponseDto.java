@@ -17,7 +17,7 @@ public record CouponIssuedResponseDto(
     public static CouponIssuedResponseDto fromEntity(CouponIssued issued) {
         return CouponIssuedResponseDto.builder()
                 .issuedId(issued.getIssuedId())
-                .couponId(issued.getCouponId())
+                .couponId(issued.getCoupon().getCouponId())
                 .userId(issued.getUserId())
                 .issuedAt(issued.getIssuedAt())
                 .build();

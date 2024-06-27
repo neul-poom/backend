@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "coupon_issued")
 @Getter
-@Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class CouponIssued {
@@ -23,8 +22,9 @@ public class CouponIssued {
     @Column(name = "issued_id", updatable = false)
     private Long issuedId;
 
-    @Column(name = "coupon_id", nullable = false)
-    private Long couponId;
+    @ManyToOne
+    @JoinColumn(name = "coupon_id", nullable = false)
+    private Coupon coupon;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
@@ -34,8 +34,8 @@ public class CouponIssued {
     private LocalDateTime issuedAt;
 
     @Builder
-    public CouponIssued(Long couponId, Long userId, LocalDateTime issuedAt) {
-        this.couponId = couponId;
+    public CouponIssued(Coupon coupon, Long userId, LocalDateTime issuedAt) {
+        this.coupon = coupon;
         this.userId = userId;
         this.issuedAt = LocalDateTime.now();
     }

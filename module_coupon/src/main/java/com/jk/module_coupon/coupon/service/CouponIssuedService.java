@@ -25,11 +25,19 @@ public class CouponIssuedService {
      */
     @Transactional
     public CouponIssuedResponseDto issueCoupon(CouponIssuedRequestDto request) {
-        // 쿠폰과 유저 검증 로직 추가
-        CouponIssued issued = new CouponIssued();
-        issued.setCouponId(request.couponId());
-        issued.setUserId(request.userId());
-        issued.setIssuedAt(LocalDateTime.now());
+        // 쿠폰 ID로 쿠폰을 찾고, 존재하지 않으면 예외 처리
+        Coupon coupon = couponRepository.findById(request.couponId())
+                .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+
+        // 사용자 ID로 사용자를 찾고, 존재하지 않으면 예외 처리
+        // User user = userRepository.findById(request.getUserId())
+        //         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        CouponIssued issued = CouponIssued.builder()
+                .coupon(coupon)
+                .userId(request.userId())
+                .issuedAt(LocalDateTime.now())
+                .build();
 
         CouponIssued saved = couponIssuedRepository.save(issued);
 
