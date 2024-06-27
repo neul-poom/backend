@@ -1,5 +1,6 @@
 package com.jk.module_coupon.coupon.controller;
 
+
 import com.jk.module_coupon.common.dto.ApiResponseDto;
 import com.jk.module_coupon.coupon.domain.Coupon;
 import com.jk.module_coupon.coupon.dto.request.CouponCreateRequestDto;
