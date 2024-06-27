@@ -3,13 +3,16 @@ package com.jk.module_user.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jk.module_user.auth.jwt.JwtUtil;
+import com.jk.module_user.common.dto.ApiResponseDto;
 import com.jk.module_user.user.dto.request.UserLoginRequestDto;
+import com.jk.module_user.user.dto.response.UserLoginResponseDto;
 import com.jk.module_user.user.entity.UserRoleEnum;
 import com.jk.module_user.user.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -51,11 +54,30 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String token = jwtUtil.createToken(username, role);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+
+        // 로그인 성공 시 HTTP 상태 코드 201(CREATED)으로 설정
+        response.setStatus(HttpStatus.CREATED.value());
+
+        // 로그인 응답 DTO 생성
+        UserLoginResponseDto loginResponseDto = new UserLoginResponseDto(username, token);
+
+        // ApiResponseDto로 응답
+        ApiResponseDto<UserLoginResponseDto> apiResponse = new ApiResponseDto<>(
+                HttpStatus.CREATED,
+                "로그인 성공",
+                loginResponseDto
+        );
+
+        try {
+            response.setContentType("application/json");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(apiResponse));
+        } catch (IOException e) {
+            log.error("Failed to write login response to output stream", e);
+        }
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        response.setStatus(401);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
     }
-
 }

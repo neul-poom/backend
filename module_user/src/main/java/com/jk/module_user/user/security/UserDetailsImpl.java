@@ -2,6 +2,7 @@ package com.jk.module_user.user.security;
 
 import com.jk.module_user.user.entity.User;
 import com.jk.module_user.user.entity.UserRoleEnum;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,12 +10,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Getter
 public class UserDetailsImpl implements UserDetails {
 
-    private final User user;
+    private final User user;            // 인증 완료된 User 객체
+    private final String username;
+//  private final String password;
 
-    public UserDetailsImpl(User user) {
+    public UserDetailsImpl(User user, String username) {
         this.user = user;
+        this.username = username;
     }
 
     public User getUser() {

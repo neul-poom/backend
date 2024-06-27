@@ -1,9 +1,10 @@
 package com.jk.module_user.user.service;
 
 import com.jk.module_user.auth.jwt.JwtUtil;
-import com.jk.module_user.user.dto.request.SignupRequestDto;
+import com.jk.module_user.user.dto.request.UserSignupRequestDto;
 import com.jk.module_user.user.dto.request.UserPasswordRequestDto;
 import com.jk.module_user.user.dto.request.UserUpdateRequestDto;
+import com.jk.module_user.user.dto.response.UserSignupResponseDto;
 import com.jk.module_user.user.entity.User;
 import com.jk.module_user.user.entity.UserRoleEnum;
 import com.jk.module_user.user.repository.UserRepository;
@@ -26,7 +27,7 @@ public class UserService {
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     // 회원 가입 로직
-    public void signup(SignupRequestDto requestDto) {
+    public UserSignupResponseDto signup(UserSignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
@@ -63,7 +64,10 @@ public class UserService {
 
         // 사용자 등록
         User user = new User(username, password, email, role, status, profileImg, balance);
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        return UserSignupResponseDto.toDto(savedUser);
+
     }
 
     // 회원 탈퇴 로직
