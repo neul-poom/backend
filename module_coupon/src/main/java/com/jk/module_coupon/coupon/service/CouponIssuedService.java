@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +34,14 @@ public class CouponIssuedService {
         CouponIssued saved = couponIssuedRepository.save(issued);
 
         return CouponIssuedResponseDto.fromEntity(saved);
+    }
+
+    /*
+     * 유저의 쿠폰 발급 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<CouponIssuedResponseDto> listUserCoupons(Long userId) {
+        List<CouponIssued> issueds = couponIssuedRepository.findByUserId(userId);
+        return issueds.stream().map(CouponIssuedResponseDto::fromEntity).collect(Collectors.toList());
     }
 }
