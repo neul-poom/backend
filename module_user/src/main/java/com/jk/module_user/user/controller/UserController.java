@@ -31,17 +31,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    // 회원 가입 페이지 요청
-    @GetMapping("/signup")
-    public String signupPage() {
-        return "signup";
-    }
-
-    // 로그인 페이지 요청
-    @GetMapping("/login-page")
-    public String loginPage() {
-        return "login";
-    }
 
     //회원 가입
     // Body: { "username": String, "password": String, "email": String, "status": String, "profileImg": String (optional), "balance": String, "adminToken": String (optional) }
