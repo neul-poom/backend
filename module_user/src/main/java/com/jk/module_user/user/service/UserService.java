@@ -5,6 +5,7 @@ import com.jk.module_user.user.dto.request.UserSignupRequestDto;
 import com.jk.module_user.user.dto.request.UserPasswordRequestDto;
 import com.jk.module_user.user.dto.request.UserUpdateRequestDto;
 import com.jk.module_user.user.dto.response.UserSignupResponseDto;
+import com.jk.module_user.user.dto.response.UserUpdateResponseDto;
 import com.jk.module_user.user.entity.User;
 import com.jk.module_user.user.entity.UserRoleEnum;
 import com.jk.module_user.user.repository.UserRepository;
@@ -53,9 +54,6 @@ public class UserService {
             role = UserRoleEnum.ADMIN;
         }
 
-        // 상태
-        String status = requestDto.getStatus();
-
         // 프로필 이미지
         String profileImg = requestDto.getProfileImg();
 
@@ -63,59 +61,62 @@ public class UserService {
         String balance = requestDto.getBalance();
 
         // 사용자 등록
-        User user = new User(username, password, email, role, status, profileImg, balance);
+        User user = new User(username, password, email, role, profileImg, balance);
         User savedUser = userRepository.save(user);
 
         return UserSignupResponseDto.toDto(savedUser);
 
     }
 
+    // 회원 정보 수정 로직
+    @Transactional
+    public UserUpdateResponseDto update(User user, UserUpdateRequestDto requestDto) {
+        // 비밀번호 확인
+        if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        if (requestDto.getUsername() != null && !requestDto.getUsername().isEmpty()) {
+            user.setUsername(requestDto.getUsername());
+        }
+        if (requestDto.getEmail() != null && !requestDto.getEmail().isEmpty()) {
+            user.setEmail(requestDto.getEmail());
+        }
+        if (requestDto.getProfileImg() != null && !requestDto.getProfileImg().isEmpty()) {
+            user.setProfileImg(requestDto.getProfileImg());
+        }
+        if (requestDto.getBalance() != null && !requestDto.getBalance().isEmpty()) {
+            user.setBalance(requestDto.getBalance());
+        }
+        User savedUser = userRepository.save(user);
+        return UserUpdateResponseDto.toDto(savedUser);
+    }
+
+    // 비밀번호 수정 로직
+    @Transactional
+    public void updatePassword(User user, UserPasswordRequestDto requestDto) {
+        // 현재 비밀번호 확인
+        if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새로운 비밀번호 암호화 및 업데이트
+        String encodedNewPassword = passwordEncoder.encode(requestDto.getNewPassword());
+        user.setPassword(encodedNewPassword);
+        userRepository.save(user); // 변경 사항 저장
+    }
+
     // 회원 탈퇴 로직
     @Transactional
-    public void resign(User user, UserPasswordRequestDto userPasswordRequestDto) {
-        if (passwordEncoder.matches(userPasswordRequestDto.getCurrentPassword(), user.getPassword())) {
-            user.setStatus("N"); // 비밀번호 일치 시, 회원 상태를 N으로 변경
+    public void resign(User user, UserPasswordRequestDto requestDto) {
+        // 변경된 부분: status 필드를 boolean으로 변경하고 탈퇴 시 false로 설정
+        if (passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
+            user.setStatus(false); // 비밀번호 일치 시, 회원 상태를 false로 변경
             userRepository.save(user); // 변경 사항 저장
         } else {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
     }
 
-    // 회원 정보 수정 로직
-    @Transactional
-    public void update(User user, UserUpdateRequestDto userUpdateRequestDto) {
-        // 비밀번호 확인
-        if (!passwordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
-        }
-
-        if (userUpdateRequestDto.getUsername() != null && !userUpdateRequestDto.getUsername().isEmpty()) {
-            user.setUsername(userUpdateRequestDto.getUsername());
-        }
-        if (userUpdateRequestDto.getEmail() != null && !userUpdateRequestDto.getEmail().isEmpty()) {
-            user.setEmail(userUpdateRequestDto.getEmail());
-        }
-        if (userUpdateRequestDto.getProfileImg() != null && !userUpdateRequestDto.getProfileImg().isEmpty()) {
-            user.setProfileImg(userUpdateRequestDto.getProfileImg());
-        }
-        if (userUpdateRequestDto.getBalance() != null && !userUpdateRequestDto.getBalance().isEmpty()) {
-            user.setBalance(userUpdateRequestDto.getBalance());
-        }
-        userRepository.save(user); // 변경 사항 저장
-    }
-
-    // 비밀번호 수정 로직
-    @Transactional
-    public void updatePassword(User user, UserPasswordRequestDto updatePasswordRequestDto) {
-        // 현재 비밀번호 확인
-        if (!passwordEncoder.matches(updatePasswordRequestDto.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
-        }
-
-        // 새로운 비밀번호 암호화 및 업데이트
-        String encodedNewPassword = passwordEncoder.encode(updatePasswordRequestDto.getNewPassword());
-        user.setPassword(encodedNewPassword);
-        userRepository.save(user); // 변경 사항 저장
-    }
 }
 

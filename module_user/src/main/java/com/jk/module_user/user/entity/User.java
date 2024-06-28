@@ -47,15 +47,13 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "status", columnDefinition = "varchar(1) default 'Y'") // soft delete
-    private String status;
-
-    public User(String username, String password, String email, UserRoleEnum role, String status, String profileImg, String balance) {
+    @Column(name = "status", columnDefinition = "boolean default true")
+    private boolean status = true;
+    public User(String username, String password, String email, UserRoleEnum role, String profileImg, String balance) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
-        this.status = status;
         this.profileImg = profileImg;
         this.balance = balance;
     }
