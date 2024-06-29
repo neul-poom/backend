@@ -33,6 +33,7 @@ public class CouponService {
                 .maxQuantity(request.maxQuantity())
                 .issuedQuantity(request.issuedQuantity() != null ? request.issuedQuantity() : 0L)
                 .expiresAt(request.expiresAt())
+                .couponType(request.couponType())
                 .build();
 
         Coupon savedCoupon = couponRepository.save(coupon);
@@ -66,7 +67,13 @@ public class CouponService {
         Coupon coupon = couponRepository.findById(couponId).orElseThrow(
                 () -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
-        coupon.update(request.name(), request.couponCode(), request.discountRate(), request.maxQuantity(), request.issuedQuantity(), request.expiresAt());
+        coupon.update(request.name(),
+                      request.couponCode(),
+                      request.discountRate(),
+                      request.maxQuantity(),
+                      request.issuedQuantity(),
+                      request.expiresAt(),
+                      request.couponType());
 
         couponRepository.save(coupon);
     }

@@ -1,5 +1,6 @@
 package com.jk.module_coupon.coupon.dto.request;
 
+import com.jk.module_coupon.coupon.domain.CouponTypeEnum;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
@@ -16,5 +17,6 @@ public record CouponCreateRequestDto (
     Long maxQuantity,
     Long issuedQuantity,
     @NotNull
-    LocalDateTime expiresAt
+    LocalDateTime expiresAt,
+    CouponTypeEnum couponType
 ) {}
