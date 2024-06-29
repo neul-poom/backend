@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS coupon (
     max_quantity BIGINT,
     issued_quantity BIGINT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    expires_at DATETIME DEFAULT NULL
+    expires_at DATETIME DEFAULT NULL,
+    status BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS coupon_issued (
