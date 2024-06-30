@@ -1,12 +1,8 @@
 package com.jk.module_user.auth.filter;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jk.module_user.auth.jwt.JwtUtil;
-import com.jk.module_user.common.dto.ApiResponseDto;
 import com.jk.module_user.user.dto.request.UserLoginRequestDto;
-import com.jk.module_user.user.dto.response.UserLoginResponseDto;
-import com.jk.module_user.user.entity.UserRoleEnum;
 import com.jk.module_user.user.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 
+/**
+ * 로그인 시 JWT 토큰 생성
+ */
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
@@ -36,8 +35,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            requestDto.getUsername(),
-                            requestDto.getPassword(),
+                            requestDto.username(),
+                            requestDto.password(),
                             null
                     )
             );
@@ -50,30 +49,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+        String token = jwtUtil.generateToken(username);
 
-        String token = jwtUtil.createToken(username, role);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
-
-        // 로그인 성공 시 HTTP 상태 코드 201(CREATED)으로 설정
-        response.setStatus(HttpStatus.CREATED.value());
-
-        // 로그인 응답 DTO 생성
-        UserLoginResponseDto loginResponseDto = new UserLoginResponseDto(username, token);
-
-        // ApiResponseDto로 응답
-        ApiResponseDto<UserLoginResponseDto> apiResponse = new ApiResponseDto<>(
-                HttpStatus.CREATED,
-                "로그인 성공",
-                loginResponseDto
-        );
-
-        try {
-            response.setContentType("application/json");
-            response.getWriter().write(new ObjectMapper().writeValueAsString(apiResponse));
-        } catch (IOException e) {
-            log.error("Failed to write login response to output stream", e);
-        }
+        response.addHeader("Authorization", "Bearer " + token);
+        response.setStatus(HttpStatus.OK.value());
     }
 
     @Override

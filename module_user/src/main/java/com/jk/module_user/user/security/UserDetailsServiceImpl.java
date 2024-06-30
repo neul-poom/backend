@@ -8,18 +8,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-
+/**
+ * 사용자 인증 관련 서비스 제공
+ */
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService { // security의 default 로그인 기능을 사용하지 않겠다
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)     // 해당 유저가 있는지 없는지 확인
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Not Found " + username));
         System.out.println("user :" + user);
-        return new UserDetailsImpl(user, user.getUsername());   // 사용자 정보를 UserDetails로 반환
+        return new UserDetailsImpl(user, user.getUsername());
     }
 }

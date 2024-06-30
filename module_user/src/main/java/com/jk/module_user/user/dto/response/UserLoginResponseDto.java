@@ -1,13 +1,7 @@
 package com.jk.module_user.user.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
 
-@Getter
-@Setter
-@AllArgsConstructor
-public class UserLoginResponseDto {
-    private String username;
-    private String token;
+@Builder
+public record UserLoginResponseDto(String username, String token) {
 }

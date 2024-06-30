@@ -34,8 +34,7 @@ public class UserController {
         this.userService = userService;
     }
 
-
-    //회원 가입
+    // 회원 가입
     // Body: { "username": String, "password": String, "email": String, "status": String, "profileImg": String (optional), "balance": String (optional), "adminToken": String (optional) }
     @PostMapping("/signup")
     public ResponseEntity<ApiResponseDto<UserSignupResponseDto>> signup(@Valid @RequestBody UserSignupRequestDto requestDto, BindingResult bindingResult) {
@@ -82,8 +81,6 @@ public class UserController {
                     .body(new ApiResponseDto<>(HttpStatus.BAD_REQUEST, e.getMessage(), null));
         }
     }
-
-
 
     // 비밀번호 수정
     // Body: { "currentPassword": String, "newPassword": String }

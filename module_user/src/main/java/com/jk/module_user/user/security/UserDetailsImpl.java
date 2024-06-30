@@ -10,12 +10,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * 인증된 사용자 정보를 나타내는 클래스
+ */
 @Getter
 public class UserDetailsImpl implements UserDetails {
 
     private final User user;            // 인증 완료된 User 객체
     private final String username;
-//  private final String password;
 
     public UserDetailsImpl(User user, String username) {
         this.user = user;

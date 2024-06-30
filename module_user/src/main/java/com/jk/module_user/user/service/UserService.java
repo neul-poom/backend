@@ -1,14 +1,21 @@
 package com.jk.module_user.user.service;
 
 import com.jk.module_user.auth.jwt.JwtUtil;
+import com.jk.module_user.user.controller.dto.response.InternalUserIdResponseDto;
+import com.jk.module_user.user.dto.request.UserLoginRequestDto;
 import com.jk.module_user.user.dto.request.UserSignupRequestDto;
 import com.jk.module_user.user.dto.request.UserPasswordRequestDto;
 import com.jk.module_user.user.dto.request.UserUpdateRequestDto;
+import com.jk.module_user.user.dto.response.UserLoginResponseDto;
 import com.jk.module_user.user.dto.response.UserSignupResponseDto;
 import com.jk.module_user.user.dto.response.UserUpdateResponseDto;
 import com.jk.module_user.user.entity.User;
 import com.jk.module_user.user.entity.UserRoleEnum;
 import com.jk.module_user.user.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,9 +30,44 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     // ADMIN_TOKEN
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+
+    /**
+     * 사용자 인증, JWT 토큰 생성
+     *
+     * @param loginRequest 로그인 요청 DTO
+     * @return UserLoginResponseDto 로그인 응답 DTO
+     */
+    public UserLoginResponseDto authenticateUser(UserLoginRequestDto loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.username(),
+                        loginRequest.password()
+                )
+        );
+
+        String token = jwtUtil.generateToken(loginRequest.username());
+        return new UserLoginResponseDto(loginRequest.username(), token);
+    }
+
+    /**
+     * JWT 토큰 검증, 사용자 ID 반환
+     *
+     * @param token JWT 토큰
+     * @return InternalUserIdResponseDto 토큰 검증 결과 및 사용자 ID
+     */
+    public InternalUserIdResponseDto validateToken(String token) {
+        if (!jwtUtil.validateToken(token)) {
+            return new InternalUserIdResponseDto(false, null);
+        }
+
+        Claims info = jwtUtil.getUserInfoFromToken(token);
+        Long userId = Long.valueOf(info.getSubject());
+        return new InternalUserIdResponseDto(true, userId);
+    }
 
     // 회원 가입 로직
     public UserSignupResponseDto signup(UserSignupRequestDto requestDto) {
@@ -117,6 +159,4 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
     }
-
 }
-
