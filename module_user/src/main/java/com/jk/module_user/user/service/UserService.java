@@ -44,13 +44,13 @@ public class UserService {
     public UserLoginResponseDto authenticateUser(UserLoginRequestDto loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.username(),
+                        loginRequest.email(),
                         loginRequest.password()
                 )
         );
 
-        String token = jwtUtil.generateToken(loginRequest.username());
-        return new UserLoginResponseDto(loginRequest.username(), token);
+        String token = jwtUtil.generateToken(loginRequest.email());
+        return new UserLoginResponseDto(loginRequest.email(), token);
     }
 
     /**

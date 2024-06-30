@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            requestDto.username(),
+                            requestDto.email(),
                             requestDto.password(),
                             null
                     )
@@ -48,8 +48,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        String token = jwtUtil.generateToken(username);
+        String email = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
+        String token = jwtUtil.generateToken(email);
 
         response.addHeader("Authorization", "Bearer " + token);
         response.setStatus(HttpStatus.OK.value());
