@@ -24,7 +24,7 @@ public class CouponIssuedService {
     private final CouponIssuedRepository couponIssuedRepository;
 
     /*
-     * 쿠폰 발급
+     * 일반 쿠폰 발급
      */
     @Transactional
     public CouponIssuedResponseDto issueCoupon(CouponIssuedRequestDto request) {
@@ -43,6 +43,38 @@ public class CouponIssuedService {
                 .build();
 
         CouponIssued saved = couponIssuedRepository.save(issued);
+
+        return CouponIssuedResponseDto.fromEntity(saved);
+    }
+
+    /*
+     * 선착순 쿠폰 발급
+     */
+    @Transactional
+    public CouponIssuedResponseDto issueFirstComeCoupon(CouponIssuedRequestDto request) {
+        // 쿠폰 ID로 쿠폰을 찾고, 존재하지 않으면 예외 처리
+        Coupon coupon = couponRepository.findById(request.couponId())
+                .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+
+        // 발급 가능한 쿠폰 수량 확인
+        if (coupon.getIssuedQuantity() >= coupon.getMaxQuantity()) {
+            throw new CustomException(ErrorCode.COUPON_ISSUE_LIMIT_EXCEEDED);
+        }
+
+        // 새로운 쿠폰 발급
+        CouponIssued issued = CouponIssued.builder()
+                .coupon(coupon)
+                .userId(request.userId())
+                .issuedAt(LocalDateTime.now())
+                .build();
+
+        CouponIssued saved = couponIssuedRepository.save(issued);
+
+        // 발급된 쿠폰 수량 증가
+        coupon.incrementIssuedQuantity();
+
+        // 쿠폰 업데이트
+        couponRepository.save(coupon);
 
         return CouponIssuedResponseDto.fromEntity(saved);
     }

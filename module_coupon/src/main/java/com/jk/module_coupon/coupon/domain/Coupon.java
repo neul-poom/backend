@@ -92,4 +92,12 @@ public class Coupon {
         this.status = false;
         this.updatedAt = LocalDateTime.now();
     }
+
+    // 발급된 수량 증가 메서드
+    public void incrementIssuedQuantity() {
+        if (this.issuedQuantity == null) {
+            this.issuedQuantity = 0L;
+        }
+        this.issuedQuantity += 1;
+    }
 }
