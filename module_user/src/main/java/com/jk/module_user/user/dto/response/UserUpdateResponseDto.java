@@ -1,10 +1,16 @@
 package com.jk.module_user.user.dto.response;
 
 import com.jk.module_user.user.entity.User;
+import com.jk.module_user.user.entity.UserRoleEnum;
 import lombok.Builder;
 
 @Builder
-public record UserUpdateResponseDto(String username, String email, String profileImg, String balance) {
+public record UserUpdateResponseDto(
+        String username,
+        String email,
+        String profileImg,
+        String balance
+) {
 
     public static UserUpdateResponseDto toDto(User user){
         return UserUpdateResponseDto.builder()

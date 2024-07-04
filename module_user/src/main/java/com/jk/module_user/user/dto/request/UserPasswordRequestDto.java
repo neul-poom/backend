@@ -1,11 +1,10 @@
 package com.jk.module_user.user.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
 
-@Getter
-@Setter
-public class UserPasswordRequestDto {
-    private String currentPassword;
-    private String newPassword;
+@Builder
+public record UserPasswordRequestDto(
+        String currentPassword,
+        String newPassword
+) {
 }
