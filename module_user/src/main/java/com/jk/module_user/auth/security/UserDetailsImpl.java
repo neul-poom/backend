@@ -1,4 +1,4 @@
-package com.jk.module_user.user.security;
+package com.jk.module_user.auth.security;
 
 import com.jk.module_user.user.entity.User;
 import com.jk.module_user.user.entity.UserRoleEnum;
@@ -15,29 +15,38 @@ import java.util.Collection;
  */
 @Getter
 public class UserDetailsImpl implements UserDetails {
+    private final User user;
 
-    private final User user;            // 인증 완료된 User 객체
-    private final String username;
-
-    public UserDetailsImpl(User user, String username) {
+    /**
+     * UserDetailsImpl 생성자
+     * @param user 인증된 사용자 객체
+     */
+    public UserDetailsImpl(User user) {
         this.user = user;
-        this.username = username;
     }
 
-    public User getUser() {
-        return user;
-    }
-
+    /**
+     * 사용자 비밀번호 반환
+     * @return User 객체의 비밀번호
+     */
     @Override
     public String getPassword() {
         return user.getPassword();
     }
 
+    /**
+     * 사용자 이메일 반환
+     * @return User 객체의 이메일
+     */
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getEmail();
     }
 
+    /**
+     * 사용자의 권한을 반환
+     * @return User 객체의 권한 목록
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         UserRoleEnum role = user.getRole();
@@ -50,21 +59,37 @@ public class UserDetailsImpl implements UserDetails {
         return authorities;
     }
 
+    /**
+     * 계정 만료 여부
+     * @return 항상 true (계정이 만료되지 않음)
+     */
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    /**
+     * 계정 잠김 여부
+     * @return 항상 true (계정이 잠겨 있지 않음)
+     */
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    /**
+     * 자격 증명의 만료 여부
+     * @return 항상 true (자격 증명이 만료되지 않음)
+     */
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    /**
+     * 계정의 활성화 여부
+     * @return 항상 true (계정이 활성화 상태)
+     */
     @Override
     public boolean isEnabled() {
         return true;
