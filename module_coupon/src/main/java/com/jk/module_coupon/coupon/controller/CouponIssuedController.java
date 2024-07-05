@@ -20,12 +20,21 @@ public class CouponIssuedController {
     private final CouponIssuedService couponIssuedService;
 
     /*
-     * 쿠폰 발급
+     * 일반 쿠폰 발급
      */
-    @PostMapping("/issue")
+    @PostMapping("/general")
     public ResponseEntity<ApiResponseDto<CouponIssuedResponseDto>> issueCoupon(@RequestBody CouponIssuedRequestDto request) {
         CouponIssuedResponseDto issued = couponIssuedService.issueCoupon(request);
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "쿠폰이 발급되었습니다.", issued));
+    }
+
+    /*
+     * 선착순 쿠폰 발급
+     */
+    @PostMapping("/first-come")
+    public ResponseEntity<ApiResponseDto<CouponIssuedResponseDto>> issueFirstComeCoupon(@RequestBody CouponIssuedRequestDto request) {
+        CouponIssuedResponseDto issued = couponIssuedService.issueFirstComeCoupon(request);
+        return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "선착순 쿠폰이 발급되었습니다.", issued));
     }
 
     /*

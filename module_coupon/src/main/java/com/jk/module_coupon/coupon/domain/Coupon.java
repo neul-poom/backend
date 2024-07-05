@@ -50,8 +50,12 @@ public class Coupon {
     @Column(name = "status", nullable = false)
     private Boolean status = true;
 
+    @Column(name = "coupon_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CouponTypeEnum couponType;
+
     @Builder
-    public Coupon(String name, String couponCode, Integer discountRate, Long maxQuantity, Long issuedQuantity, LocalDateTime expiresAt) {
+    public Coupon(String name, String couponCode, Integer discountRate, Long maxQuantity, Long issuedQuantity, LocalDateTime expiresAt, CouponTypeEnum couponType) {
         this.name = name;
         this.couponCode = couponCode;
         this.discountRate = discountRate;
@@ -59,9 +63,10 @@ public class Coupon {
         this.issuedQuantity = issuedQuantity;
         this.expiresAt = expiresAt;
         this.status = true;
+        this.couponType = couponType;
     }
 
-    public void update(String name, String couponCode, Integer discountRate, Long maxQuantity, Long issuedQuantity, LocalDateTime expiresAt) {
+    public void update(String name, String couponCode, Integer discountRate, Long maxQuantity, Long issuedQuantity, LocalDateTime expiresAt, CouponTypeEnum couponType) {
         if (name != null) {
             this.name = name;
         }
@@ -77,11 +82,22 @@ public class Coupon {
         if (expiresAt != null) {
             this.expiresAt = expiresAt;
         }
+        if (couponType != null) {
+            this.couponType = couponType;
+        }
         this.updatedAt = LocalDateTime.now();
     }
 
     public void deactivate() {
         this.status = false;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // 발급된 수량 증가 메서드
+    public void incrementIssuedQuantity() {
+        if (this.issuedQuantity == null) {
+            this.issuedQuantity = 0L;
+        }
+        this.issuedQuantity += 1;
     }
 }
