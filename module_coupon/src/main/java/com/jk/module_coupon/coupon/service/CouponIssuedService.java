@@ -27,7 +27,7 @@ public class CouponIssuedService {
     private final CouponIssuedRepository couponIssuedRepository;
     private final CouponCountRepository couponCountRepository;
 
-    /*
+    /**
      * 일반 쿠폰 발급
      */
     @Transactional
@@ -51,7 +51,7 @@ public class CouponIssuedService {
         return CouponIssuedResponseDto.fromEntity(saved);
     }
 
-    /*
+    /**
      * 선착순 쿠폰 발급
      */
     @Transactional
@@ -83,7 +83,7 @@ public class CouponIssuedService {
         return CouponIssuedResponseDto.fromEntity(saved);
     }
 
-    /*
+    /**
      * 유저의 쿠폰 발급 목록 조회
      */
     @Transactional(readOnly = true)
@@ -92,7 +92,7 @@ public class CouponIssuedService {
         return issueds.stream().map(CouponIssuedResponseDto::fromEntity).collect(Collectors.toList());
     }
 
-    /*
+    /**
      * 특정 쿠폰의 발급 목록 조회
      */
     @Transactional(readOnly = true)
@@ -104,7 +104,7 @@ public class CouponIssuedService {
         return issueds.stream().map(CouponIssuedResponseDto::fromEntity).collect(Collectors.toList());
     }
 
-    /*
+    /**
      * 발급된 쿠폰 취소
      */
     @Transactional
