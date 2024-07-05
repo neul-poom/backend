@@ -7,9 +7,11 @@ import com.jk.module_coupon.coupon.domain.CouponIssued;
 import com.jk.module_coupon.coupon.dto.request.CouponCreateRequestDto;
 import com.jk.module_coupon.coupon.dto.request.CouponIssuedRequestDto;
 import com.jk.module_coupon.coupon.dto.response.CouponIssuedResponseDto;
+import com.jk.module_coupon.coupon.repository.CouponCountRepository;
 import com.jk.module_coupon.coupon.repository.CouponIssuedRepository;
 import com.jk.module_coupon.coupon.repository.CouponRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +20,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CouponIssuedService {
     private final CouponRepository couponRepository;
     private final CouponIssuedRepository couponIssuedRepository;
+    private final CouponCountRepository couponCountRepository;
 
     /*
      * 일반 쿠폰 발급
@@ -56,12 +60,18 @@ public class CouponIssuedService {
         Coupon coupon = couponRepository.findById(request.couponId())
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
 
-        // 발급 가능한 쿠폰 수량 확인
-        if (coupon.getIssuedQuantity() >= coupon.getMaxQuantity()) {
+        // 발급 가능한 쿠폰 수량 확인 -> Redis
+        Long currentCount = couponCountRepository.getCount(request.couponId());
+        if (currentCount > coupon.getMaxQuantity()) {
             throw new CustomException(ErrorCode.COUPON_ISSUE_LIMIT_EXCEEDED);
         }
 
-        // 새로운 쿠폰 발급
+        // 새로운 쿠폰 발급 -> Redis에서 수량 증가
+        Long newCount = couponCountRepository.increment(request.couponId());
+        if (newCount > coupon.getMaxQuantity()) {
+            throw new CustomException(ErrorCode.COUPON_ISSUE_LIMIT_EXCEEDED);
+        }
+
         CouponIssued issued = CouponIssued.builder()
                 .coupon(coupon)
                 .userId(request.userId())
@@ -69,12 +79,6 @@ public class CouponIssuedService {
                 .build();
 
         CouponIssued saved = couponIssuedRepository.save(issued);
-
-        // 발급된 쿠폰 수량 증가
-        coupon.incrementIssuedQuantity();
-
-        // 쿠폰 업데이트
-        couponRepository.save(coupon);
 
         return CouponIssuedResponseDto.fromEntity(saved);
     }
