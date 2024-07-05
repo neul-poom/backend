@@ -13,6 +13,7 @@ public record UserSignupRequestDto(
 //        @NotNull
         String email,
         String profileImg,
-        String balance
+        String balance,
+        String verificationCode
 ) {
 }

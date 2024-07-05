@@ -1,5 +1,6 @@
 package com.jk.module_user.user.service;
 
+import com.jk.module_user.common.redis.service.RedisService;
 import com.jk.module_user.user.dto.request.UserPasswordRequestDto;
 import com.jk.module_user.user.dto.request.UserSignupRequestDto;
 import com.jk.module_user.user.dto.request.UserUpdateRequestDto;
@@ -22,30 +23,46 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisService redisService;
 
     @Transactional
     public UserSignupResponseDto signup(UserSignupRequestDto userSignupRequestDto) {
         log.info("UserService - 회원가입 서비스 호출");
-        Optional<User> checkUsername = userRepository.findByUsername(userSignupRequestDto.username());
-        if (checkUsername.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+
+        String verificationCode = userSignupRequestDto.verificationCode();
+        String userEmail = userSignupRequestDto.email();
+
+        // -> 이메일 인증 시 이메일 중복 검사하도록 수정
+//        Optional<User> checkEmail = userRepository.findByEmail(userSignupRequestDto.email());
+//        if (checkEmail.isPresent()) {
+//            throw new IllegalArgumentException("중복된 Email 입니다.");
+//        }
+
+        if (isVerify(userEmail, verificationCode)) {
+            String encodedPassword = passwordEncoder.encode(userSignupRequestDto.password());
+            //1. userRequest로 entity 생성
+            User signupUser = User.builder()
+                    .username(userSignupRequestDto.username())
+                    .password(passwordEncoder.encode(userSignupRequestDto.password()))
+                    .email(userSignupRequestDto.email())
+                    .profileImg(userSignupRequestDto.profileImg())
+                    .balance(userSignupRequestDto.balance() != null ? userSignupRequestDto.balance() : "0")
+                    .build();
+
+            //2. 생성된 entity db에 저장
+            User createdUser = userRepository.save(signupUser);
+
+            redisService.deleteValue(userEmail);
+
+            return UserSignupResponseDto.toDto(createdUser);
+        } else {
+            throw new IllegalArgumentException("인증코드 불일치");
         }
 
-        Optional<User> checkEmail = userRepository.findByEmail(userSignupRequestDto.email());
-        if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
-        }
+    }
 
-        User signupUser = User.builder()
-                .username(userSignupRequestDto.username())
-                .password(passwordEncoder.encode(userSignupRequestDto.password()))
-                .email(userSignupRequestDto.email())
-                .profileImg(userSignupRequestDto.profileImg())
-                .balance(userSignupRequestDto.balance() != null ? userSignupRequestDto.balance() : "0")
-                .build();
-
-        User savedUser = userRepository.save(signupUser);
-        return UserSignupResponseDto.toDto(savedUser);
+    public boolean isVerify(String userEmail, String requestCode) {
+        return redisService.compareValue(userEmail, requestCode);
     }
 
     @Transactional

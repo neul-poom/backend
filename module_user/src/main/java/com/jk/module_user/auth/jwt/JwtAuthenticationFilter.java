@@ -68,12 +68,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = jwtTokenProvider.generateAccessToken(email, userId);
         String refreshToken = jwtTokenProvider.generateRefreshToken(email, userId);
 
-        jwtTokenProvider.accessTokenSetHeader(accessToken, response);
-        jwtTokenProvider.refreshTokenSetHeader(refreshToken, response);
+        response.setHeader("Authorization", "Bearer " + accessToken);
+        response.setHeader("Refresh-Token", refreshToken);
 
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
-        super.successfulAuthentication(request, response, chain, authResult);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write("JWT 토큰 발급 성공");
+        response.getWriter().flush();
     }
 
     /**

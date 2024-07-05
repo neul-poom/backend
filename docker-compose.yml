@@ -71,6 +71,15 @@ services:
     networks:
       - neulpoom_network
 
+  redis_user:
+    hostname: redis_user
+    container_name: redis_user
+    image: redis:6
+    ports:
+      - "6381:6379"
+    networks:
+      - neulpoom_network
+
 volumes:
   db_user:
   db_lecture:

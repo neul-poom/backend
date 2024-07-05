@@ -23,7 +23,7 @@ public class FilterConfig {
                 .route(r -> r.path("/api/v1/users/**")
                         .filters(f -> f.filter(authorizationHeaderFilter.apply(
                                         new AuthorizationHeaderFilter.Config()
-                                                .setWhiteList(Arrays.asList("/api/v1/users/signup", "/api/v1/users/login"))))
+                                                .setWhiteList(Arrays.asList("/api/v1/users/signup", "/api/v1/users/login", "/api/v1/users/verification"))))
                                 .rewritePath("/api/v1/users/(?<segment>.*)", "/api/v1/users/${segment}"))
                         .uri("http://localhost:8081"))
 
