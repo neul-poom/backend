@@ -30,7 +30,7 @@ public class FilterConfig {
                 .route(r -> r.path("/api/v1/coupons/**")
                         .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config()))
                                 .rewritePath("/api/v1/coupons/(?<segment>.*)", "/api/v1/coupons/${segment}"))
-                        .uri("http://localhost:8082"))
+                        .uri("http://localhost:8083"))
 
                 .route(r -> r.path("/api/v1/coupon-issued/**")
                         .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config()))
