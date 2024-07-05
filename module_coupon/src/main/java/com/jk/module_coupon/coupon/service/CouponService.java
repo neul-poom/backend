@@ -21,7 +21,7 @@ import java.util.List;
 public class CouponService {
     private final CouponRepository couponRepository;
 
-    /*
+    /**
      * 쿠폰 등록
      */
     @Transactional
@@ -41,7 +41,7 @@ public class CouponService {
         return savedCoupon.getCouponId();
     }
 
-    /*
+    /**
      * 단일 쿠폰 조회
      */
     @Transactional(readOnly = true)
@@ -51,7 +51,7 @@ public class CouponService {
         );
     }
 
-    /*
+    /**
      * 쿠폰 목록 조회
      */
     @Transactional(readOnly = true)
@@ -59,7 +59,7 @@ public class CouponService {
         return couponRepository.findAll(PageRequest.of(page - 1, size)).getContent();
     }
 
-    /*
+    /**
      * 쿠폰 수정
      */
     @Transactional
@@ -78,7 +78,7 @@ public class CouponService {
         couponRepository.save(coupon);
     }
 
-    /*
+    /**
      * 쿠폰 삭제
      */
     @Transactional
@@ -89,7 +89,7 @@ public class CouponService {
         couponRepository.save(coupon);
     }
 
-    /*
+    /**
      * 유효한 쿠폰 목록 조회
      */
     @Transactional(readOnly = true)
@@ -97,7 +97,7 @@ public class CouponService {
         return couponRepository.findByExpiresAtAfterAndStatusIsTrue(LocalDateTime.now(), PageRequest.of(page - 1, size)).getContent();
     }
 
-    /*
+    /**
      * 만료된 쿠폰 목록 조회
      */
     @Transactional(readOnly = true)

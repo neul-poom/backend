@@ -19,7 +19,7 @@ import java.util.List;
 public class CouponIssuedController {
     private final CouponIssuedService couponIssuedService;
 
-    /*
+    /**
      * 일반 쿠폰 발급
      */
     @PostMapping("/general")
@@ -28,7 +28,7 @@ public class CouponIssuedController {
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "쿠폰이 발급되었습니다.", issued));
     }
 
-    /*
+    /**
      * 선착순 쿠폰 발급
      */
     @PostMapping("/first-come")
@@ -37,7 +37,7 @@ public class CouponIssuedController {
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "선착순 쿠폰이 발급되었습니다.", issued));
     }
 
-    /*
+    /**
      * 유저의 쿠폰 발급 목록 조회
      */
     @GetMapping("/user/{userId}")
@@ -46,7 +46,7 @@ public class CouponIssuedController {
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "유저의 쿠폰 발급 목록입니다.", issueds));
     }
 
-    /*
+    /**
      * 특정 쿠폰의 발급 목록 조회
      */
     @GetMapping("/coupon/{couponId}")
@@ -55,7 +55,7 @@ public class CouponIssuedController {
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "특정 쿠폰의 발급 내역입니다.", issueds));
     }
 
-    /*
+    /**
      * 발급된 쿠폰 취소
      */
     @DeleteMapping("/{issuedId}")
