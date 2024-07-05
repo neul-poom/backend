@@ -1,121 +1,128 @@
 package com.jk.module_user.user.service;
 
-import com.jk.module_user.auth.jwt.JwtUtil;
-import com.jk.module_user.user.dto.request.UserSignupRequestDto;
+import com.jk.module_user.common.redis.service.RedisService;
 import com.jk.module_user.user.dto.request.UserPasswordRequestDto;
+import com.jk.module_user.user.dto.request.UserSignupRequestDto;
 import com.jk.module_user.user.dto.request.UserUpdateRequestDto;
+import com.jk.module_user.user.dto.response.UserInfoResponseDto;
 import com.jk.module_user.user.dto.response.UserSignupResponseDto;
+import com.jk.module_user.user.dto.response.UserUpdateResponseDto;
 import com.jk.module_user.user.entity.User;
-import com.jk.module_user.user.entity.UserRoleEnum;
 import com.jk.module_user.user.repository.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final RedisService redisService;
 
-    // ADMIN_TOKEN
-    private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
-
-    // 회원 가입 로직
-    public UserSignupResponseDto signup(UserSignupRequestDto requestDto) {
-        String username = requestDto.getUsername();
-        String password = passwordEncoder.encode(requestDto.getPassword());
-
-        // 회원 중복 확인
-        Optional<User> checkUsername = userRepository.findByUsername(username);
-        if (checkUsername.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
-        }
-
-        // email 중복확인
-        String email = requestDto.getEmail();
-        Optional<User> checkEmail = userRepository.findByEmail(email);
-        if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
-        }
-
-        // 사용자 ROLE 확인
-        UserRoleEnum role = UserRoleEnum.USER;
-        if (requestDto.isAdmin()) {
-            if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
-            }
-            role = UserRoleEnum.ADMIN;
-        }
-
-        // 상태
-        String status = requestDto.getStatus();
-
-        // 프로필 이미지
-        String profileImg = requestDto.getProfileImg();
-
-        // 밸런스
-        String balance = requestDto.getBalance();
-
-        // 사용자 등록
-        User user = new User(username, password, email, role, status, profileImg, balance);
-        User savedUser = userRepository.save(user);
-
-        return UserSignupResponseDto.toDto(savedUser);
-
-    }
-
-    // 회원 탈퇴 로직
     @Transactional
-    public void resign(User user, UserPasswordRequestDto userPasswordRequestDto) {
-        if (passwordEncoder.matches(userPasswordRequestDto.getCurrentPassword(), user.getPassword())) {
-            user.setStatus("N"); // 비밀번호 일치 시, 회원 상태를 N으로 변경
-            userRepository.save(user); // 변경 사항 저장
+    public UserSignupResponseDto signup(UserSignupRequestDto userSignupRequestDto) {
+        log.info("UserService - 회원가입 서비스 호출");
+
+        String verificationCode = userSignupRequestDto.verificationCode();
+        String userEmail = userSignupRequestDto.email();
+
+        // -> 이메일 인증 시 이메일 중복 검사하도록 수정
+//        Optional<User> checkEmail = userRepository.findByEmail(userSignupRequestDto.email());
+//        if (checkEmail.isPresent()) {
+//            throw new IllegalArgumentException("중복된 Email 입니다.");
+//        }
+
+        if (isVerify(userEmail, verificationCode)) {
+            String encodedPassword = passwordEncoder.encode(userSignupRequestDto.password());
+            //1. userRequest로 entity 생성
+            User signupUser = User.builder()
+                    .username(userSignupRequestDto.username())
+                    .password(passwordEncoder.encode(userSignupRequestDto.password()))
+                    .email(userSignupRequestDto.email())
+                    .profileImg(userSignupRequestDto.profileImg())
+                    .balance(userSignupRequestDto.balance() != null ? userSignupRequestDto.balance() : "0")
+                    .build();
+
+            //2. 생성된 entity db에 저장
+            User createdUser = userRepository.save(signupUser);
+
+            redisService.deleteValue(userEmail);
+
+            return UserSignupResponseDto.toDto(createdUser);
         } else {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("인증코드 불일치");
         }
+
     }
 
-    // 회원 정보 수정 로직
+    public boolean isVerify(String userEmail, String requestCode) {
+        return redisService.compareValue(userEmail, requestCode);
+    }
+
     @Transactional
-    public void update(User user, UserUpdateRequestDto userUpdateRequestDto) {
-        // 비밀번호 확인
-        if (!passwordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
+    public UserUpdateResponseDto update(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
+        log.info("UserService - 회원정보 수정 서비스 호출");
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        if (!passwordEncoder.matches(userUpdateRequestDto.currentPassword(), user.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
-        if (userUpdateRequestDto.getUsername() != null && !userUpdateRequestDto.getUsername().isEmpty()) {
-            user.setUsername(userUpdateRequestDto.getUsername());
+        user.updateUserInfo(
+                userUpdateRequestDto.username(),
+                userUpdateRequestDto.email(),
+                userUpdateRequestDto.profileImg(),
+                userUpdateRequestDto.balance()
+        );
+
+        if (userUpdateRequestDto.password() != null && !userUpdateRequestDto.password().isEmpty()) {
+            user.updatePassword(passwordEncoder.encode(userUpdateRequestDto.password()));
         }
-        if (userUpdateRequestDto.getEmail() != null && !userUpdateRequestDto.getEmail().isEmpty()) {
-            user.setEmail(userUpdateRequestDto.getEmail());
-        }
-        if (userUpdateRequestDto.getProfileImg() != null && !userUpdateRequestDto.getProfileImg().isEmpty()) {
-            user.setProfileImg(userUpdateRequestDto.getProfileImg());
-        }
-        if (userUpdateRequestDto.getBalance() != null && !userUpdateRequestDto.getBalance().isEmpty()) {
-            user.setBalance(userUpdateRequestDto.getBalance());
-        }
-        userRepository.save(user); // 변경 사항 저장
+
+        User savedUser = userRepository.save(user);
+        return UserUpdateResponseDto.toDto(savedUser);
     }
 
-    // 비밀번호 수정 로직
     @Transactional
-    public void updatePassword(User user, UserPasswordRequestDto updatePasswordRequestDto) {
-        // 현재 비밀번호 확인
-        if (!passwordEncoder.matches(updatePasswordRequestDto.getCurrentPassword(), user.getPassword())) {
+    public void updatePassword(Long userId, UserPasswordRequestDto userPasswordRequestDto) {
+        log.info("UserService - 비밀번호 변경 서비스 호출");
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new IllegalArgumentException("유저를 찾을 수 없습니다."));
+        if (!passwordEncoder.matches(userPasswordRequestDto.currentPassword(), user.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
-        // 새로운 비밀번호 암호화 및 업데이트
-        String encodedNewPassword = passwordEncoder.encode(updatePasswordRequestDto.getNewPassword());
-        user.setPassword(encodedNewPassword);
-        userRepository.save(user); // 변경 사항 저장
+        user.updatePassword(passwordEncoder.encode(userPasswordRequestDto.newPassword()));
+        userRepository.save(user);
+
+    }
+
+    @Transactional
+    public void resign(Long userId, UserPasswordRequestDto userPasswordRequestDto) {
+        log.info("UserService - 회원탈퇴 서비스 호출");
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        if (!passwordEncoder.matches(userPasswordRequestDto.currentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        user.deactivate();
+        userRepository.save(user);
+        log.info("UserService - 회원탈퇴 처리 완료: {}", userId);
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfoResponseDto getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+        return UserInfoResponseDto.toDto(user);
     }
 }
-

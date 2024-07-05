@@ -5,17 +5,16 @@ import com.jk.module_user.user.entity.UserRoleEnum;
 import lombok.Builder;
 
 @Builder
-public record UserSignupResponseDto(
+public record UserUpdateResponseDto(
         String username,
-        String password,
         String email,
         String profileImg,
         String balance
 ) {
-    public static UserSignupResponseDto toDto(User user){
-        return UserSignupResponseDto.builder()
+
+    public static UserUpdateResponseDto toDto(User user){
+        return UserUpdateResponseDto.builder()
                 .username(user.getUsername())
-                .password(user.getPassword())
                 .email(user.getEmail())
                 .profileImg(user.getProfileImg())
                 .balance(user.getBalance())
