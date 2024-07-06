@@ -80,6 +80,15 @@ services:
     networks:
       - neulpoom_network
 
+  redis_coupon:
+    hostname: redis_coupon
+    container_name: redis_coupon
+    image: redis:6
+    ports:
+      - "6380:6379"
+    networks:
+      - neulpoom_network
+
 volumes:
   db_user:
   db_lecture:
