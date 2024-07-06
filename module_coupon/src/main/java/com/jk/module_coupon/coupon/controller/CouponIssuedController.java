@@ -23,8 +23,9 @@ public class CouponIssuedController {
      * 일반 쿠폰 발급
      */
     @PostMapping("/general")
-    public ResponseEntity<ApiResponseDto<CouponIssuedResponseDto>> issueCoupon(@RequestBody CouponIssuedRequestDto request) {
-        CouponIssuedResponseDto issued = couponIssuedService.issueCoupon(request);
+    public ResponseEntity<ApiResponseDto<CouponIssuedResponseDto>> issueCoupon(
+            @RequestHeader(value = "X-USER-ID") Long userId, @RequestBody CouponIssuedRequestDto request) {
+        CouponIssuedResponseDto issued = couponIssuedService.issueCoupon(userId, request);
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "쿠폰이 발급되었습니다.", issued));
     }
 
@@ -32,16 +33,18 @@ public class CouponIssuedController {
      * 선착순 쿠폰 발급
      */
     @PostMapping("/first-come")
-    public ResponseEntity<ApiResponseDto<CouponIssuedResponseDto>> issueFirstComeCoupon(@RequestBody CouponIssuedRequestDto request) {
-        CouponIssuedResponseDto issued = couponIssuedService.issueFirstComeCoupon(request);
+    public ResponseEntity<ApiResponseDto<CouponIssuedResponseDto>> issueFirstComeCoupon(
+            @RequestHeader(value = "X-USER-ID") Long userId, @RequestBody CouponIssuedRequestDto request) {
+        CouponIssuedResponseDto issued = couponIssuedService.issueFirstComeCoupon(userId, request);
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "선착순 쿠폰이 발급되었습니다.", issued));
     }
 
     /**
      * 유저의 쿠폰 발급 목록 조회
      */
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponseDto<List<CouponIssuedResponseDto>>> listUserCoupons(@PathVariable Long userId) {
+    @GetMapping("/user/coupons")
+    public ResponseEntity<ApiResponseDto<List<CouponIssuedResponseDto>>> listUserCoupons(
+            @RequestHeader(value = "X-USER-ID") Long userId) {
         List<CouponIssuedResponseDto> issueds = couponIssuedService.listUserCoupons(userId);
         return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "유저의 쿠폰 발급 목록입니다.", issueds));
     }

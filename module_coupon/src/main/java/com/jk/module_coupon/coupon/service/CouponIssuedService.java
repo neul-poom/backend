@@ -31,7 +31,7 @@ public class CouponIssuedService {
      * 일반 쿠폰 발급
      */
     @Transactional
-    public CouponIssuedResponseDto issueCoupon(CouponIssuedRequestDto request) {
+    public CouponIssuedResponseDto issueCoupon(Long userId, CouponIssuedRequestDto request) {
         // 쿠폰 ID로 쿠폰을 찾고, 존재하지 않으면 예외 처리
         Coupon coupon = couponRepository.findById(request.couponId())
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
@@ -42,7 +42,7 @@ public class CouponIssuedService {
 
         CouponIssued issued = CouponIssued.builder()
                 .coupon(coupon)
-                .userId(request.userId())
+                .userId(userId)
                 .issuedAt(LocalDateTime.now())
                 .build();
 
@@ -55,7 +55,7 @@ public class CouponIssuedService {
      * 선착순 쿠폰 발급
      */
     @Transactional
-    public CouponIssuedResponseDto issueFirstComeCoupon(CouponIssuedRequestDto request) {
+    public CouponIssuedResponseDto issueFirstComeCoupon(Long userId, CouponIssuedRequestDto request) {
         // 쿠폰 ID로 쿠폰을 찾고, 존재하지 않으면 예외 처리
         Coupon coupon = couponRepository.findById(request.couponId())
                 .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
@@ -74,7 +74,7 @@ public class CouponIssuedService {
 
         CouponIssued issued = CouponIssued.builder()
                 .coupon(coupon)
-                .userId(request.userId())
+                .userId(userId)
                 .issuedAt(LocalDateTime.now())
                 .build();
 
