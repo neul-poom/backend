@@ -3,14 +3,14 @@ package com.jk.module_user.auth.service;
 import com.jk.module_user.auth.dto.UserLoginRequestDto;
 import com.jk.module_user.auth.jwt.JwtTokenDto;
 import com.jk.module_user.auth.jwt.JwtTokenProvider;
+import com.jk.module_user.common.exception.CustomException;
+import com.jk.module_user.common.exception.ErrorCode;
 import com.jk.module_user.user.entity.User;
 import com.jk.module_user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserLoginService {
@@ -32,11 +32,11 @@ public class UserLoginService {
 
         // 이메일로 사용자 검색, 없으면 예외 발생
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("이메일 또는 비밀번호가 잘못되었습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_OR_PASSWORD_INVALID));
 
         // 비밀번호 일치 여부 확인, 일치하지 않으면 예외 발생
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("이메일 또는 비밀번호가 잘못되었습니다.");
+            throw new CustomException(ErrorCode.EMAIL_OR_PASSWORD_INVALID);
         }
 
         // 액세스 토큰 및 리프레시 토큰 생성

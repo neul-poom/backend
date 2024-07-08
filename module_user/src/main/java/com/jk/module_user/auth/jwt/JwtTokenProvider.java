@@ -14,15 +14,15 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import com.jk.module_user.common.exception.CustomException;
+import com.jk.module_user.common.exception.ErrorCode;
 
 /**
  * JWT 토큰 제공 클래스
  */
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
@@ -84,7 +84,7 @@ public class JwtTokenProvider {
      */
     public String getEmail(String token) {
         if (!validateToken(token)) {
-            throw new RuntimeException("유효하지 않은 인증 토큰입니다.");
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
         return parseClaims(token).get("email").toString();
     }
@@ -97,9 +97,9 @@ public class JwtTokenProvider {
             Claims claims = parseClaims(token);
             return claims.getExpiration().after(new Date()); // 만료 시간 확인
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException("토큰이 만료되었습니다.");
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         } catch (JwtException | IllegalArgumentException e) {
-            throw new RuntimeException("유효하지 않은 인증 토큰입니다.");
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
     }
 
