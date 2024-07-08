@@ -8,7 +8,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import com.jk.module_user.common.exception.CustomException;
+import com.jk.module_user.common.exception.ErrorCode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,7 +22,6 @@ import java.io.IOException;
 /**
  * JWT 인증 필터
  */
-@Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -38,10 +38,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("JwtAuthenticationFilter 시작");
         try {
             UserLoginRequestDto userLoginRequestDto = new ObjectMapper().readValue(request.getInputStream(), UserLoginRequestDto.class);
-            log.info("인증 시도 이메일: {}", userLoginRequestDto.email());
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -51,8 +49,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     )
             );
         } catch (IOException e) {
-            log.error("로그인 요청 읽기 오류", e);
-            throw new RuntimeException(e.getMessage());
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
     }
 
@@ -63,7 +60,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String email = authResult.getName();
         Long userId = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getUserId();
-        log.info("성공적 인증 - 이메일: {}, 사용자 ID: {}", email, userId);
 
         String accessToken = jwtTokenProvider.generateAccessToken(email, userId);
         String refreshToken = jwtTokenProvider.generateRefreshToken(email, userId);
@@ -83,8 +79,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
      */
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        log.warn("인증 실패", failed);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        throw new CustomException(ErrorCode.LOGIN_NOT_FOUND);
     }
 
     /**
