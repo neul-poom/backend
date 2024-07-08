@@ -8,9 +8,7 @@ import lombok.Builder;
 public record UserUpdateRequestDto(
         String currentPassword,
         String username,
-        String password,
         String email,
-        UserRoleEnum role,
         String profileImg,
         String balance
 ) {
