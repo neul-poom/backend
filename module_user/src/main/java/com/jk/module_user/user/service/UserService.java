@@ -67,10 +67,6 @@ public class UserService {
                 userUpdateRequestDto.balance()
         );
 
-        if (userUpdateRequestDto.password() != null && !userUpdateRequestDto.password().isEmpty()) {
-            user.updatePassword(passwordEncoder.encode(userUpdateRequestDto.password()));
-        }
-
         User savedUser = userRepository.save(user);
         return UserUpdateResponseDto.toDto(savedUser);
     }
