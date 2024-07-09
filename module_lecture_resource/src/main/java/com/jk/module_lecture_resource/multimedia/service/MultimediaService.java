@@ -3,6 +3,7 @@ package com.jk.module_lecture_resource.multimedia.service;
 import com.jk.module_lecture_resource.common.exception.CustomException;
 import com.jk.module_lecture_resource.common.exception.ErrorCode;
 import com.jk.module_lecture_resource.common.s3.service.S3Service;
+import com.jk.module_lecture_resource.lecture_note.entity.LectureNote;
 import com.jk.module_lecture_resource.multimedia.dto.request.MultimediaUpdateRequestDto;
 import com.jk.module_lecture_resource.multimedia.dto.response.MultimediaResponseDto;
 import com.jk.module_lecture_resource.multimedia.entity.Multimedia;
@@ -48,6 +49,13 @@ public class MultimediaService {
                 .lectureId(savedMultimedia.getLectureId())
                 .fileUrl(savedMultimedia.getFileUrl())
                 .build();
+    }
+
+    public String getVideoDetails(Long lectureId) {
+
+        Multimedia multimedia = multimediaRepository.findByLectureId(lectureId);
+
+        return multimedia.getFileUrl();
     }
 
     /**

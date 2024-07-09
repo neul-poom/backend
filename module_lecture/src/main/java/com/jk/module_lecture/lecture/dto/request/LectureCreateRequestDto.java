@@ -3,6 +3,7 @@ package com.jk.module_lecture.lecture.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -13,9 +14,9 @@ public record LectureCreateRequestDto (
         @NotBlank
         String description,
         @NotNull
-        Long teacherId,
-        @NotNull
-        BigDecimal price
+        BigDecimal price,
+        MultipartFile file,
+        MultipartFile video
 ) {
 
 }

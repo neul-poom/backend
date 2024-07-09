@@ -9,6 +9,7 @@ public enum ErrorCode {
 
     LECTURE_NOT_FOUND(HttpStatus.NOT_FOUND, "강의을 찾을 수 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
+    USER_NOT_MATCH(HttpStatus.FORBIDDEN, "사용자가 수정 권한이 없습니다."),
     // ------ 5xx ------
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 문제가 발생했습니다."),
     ;

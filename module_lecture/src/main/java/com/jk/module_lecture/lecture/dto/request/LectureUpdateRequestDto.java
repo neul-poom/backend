@@ -1,6 +1,7 @@
 package com.jk.module_lecture.lecture.dto.request;
 
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -8,8 +9,9 @@ import java.math.BigDecimal;
 public record LectureUpdateRequestDto(
     String title,
     String description,
-    Long teacherId,
-    BigDecimal price
+    BigDecimal price,
+    MultipartFile file,
+    MultipartFile video
 ) {
 
 }
