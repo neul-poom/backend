@@ -25,11 +25,12 @@ public class LectureController {
     /**
      * 강의 등록
      */
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<ApiResponseDto<LectureCreateResponseDto>> create(
-            @Valid @RequestBody LectureCreateRequestDto request
+            @RequestHeader(value = "X-USER-ID") Long teacherId,
+            @Valid @RequestBody @ModelAttribute LectureCreateRequestDto request
     ) {
-        LectureCreateResponseDto responseDto = lectureService.create(request.title(), request.description(), request.teacherId(), request.price());
+        LectureCreateResponseDto responseDto = lectureService.create(teacherId, request);
 
         return ResponseEntity
                 .created(URI.create("api/v1/lectures/" + responseDto.lectureId()))
@@ -42,9 +43,10 @@ public class LectureController {
     @PutMapping("/{lectureId}")
     public ResponseEntity<ApiResponseDto<LectureUpdateResponseDto>> update(
             @PathVariable Long lectureId,
+            @RequestHeader(value = "X-USER-ID") Long teacherId,
             @Valid @RequestBody LectureUpdateRequestDto request
     ) {
-        LectureUpdateResponseDto responseDto = lectureService.update(lectureId, request.title(), request.description(), request.teacherId(), request.price());
+        LectureUpdateResponseDto responseDto = lectureService.update(teacherId, lectureId, request.title(), request.description(), request.price());
 
         return ResponseEntity
                 .ok()

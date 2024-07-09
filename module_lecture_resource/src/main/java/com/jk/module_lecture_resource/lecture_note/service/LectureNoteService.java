@@ -52,6 +52,16 @@ public class LectureNoteService {
     }
 
     /**
+     * 강의 노트 조회
+     */
+    public String getNoteDetails(Long lectureId) {
+
+        LectureNote lectureNote = lectureNoteRepository.findByLectureId(lectureId);
+
+        return lectureNote.getFileUrl();
+    }
+
+    /**
      * 강의 노트 수정
      */
     @Transactional

@@ -1,7 +1,9 @@
 package com.jk.module_lecture.lecture.service;
 
+import com.jk.module_lecture.client.LectureResourceClient;
 import com.jk.module_lecture.common.exception.CustomException;
 import com.jk.module_lecture.common.exception.ErrorCode;
+import com.jk.module_lecture.lecture.dto.request.LectureCreateRequestDto;
 import com.jk.module_lecture.lecture.dto.response.*;
 import com.jk.module_lecture.lecture.entity.Lecture;
 import com.jk.module_lecture.lecture.repository.LectureRepository;
@@ -11,30 +13,41 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LectureService {
     private final LectureRepository lectureRepository;
-
+    private final LectureResourceClient lectureResourceClient;
     /**
      * 강의 등록
      */
     @Transactional
-    public LectureCreateResponseDto create(String title, String description, Long teacherId, BigDecimal price) {
+    public LectureCreateResponseDto create(Long teacherId, LectureCreateRequestDto lectureCreateRequestDto) {
         Lecture lecture = Lecture.builder()
-                .title(title)
-                .description(description)
+                .title(lectureCreateRequestDto.title())
+                .description(lectureCreateRequestDto.description())
                 .teacherId(teacherId)
-                .price(price)
+                .price(lectureCreateRequestDto.price())
                 .build();
 
         Lecture savedLecture = lectureRepository.save(lecture);
+
+        lectureResourceClient.createNote(
+                lectureCreateRequestDto.file(),
+                savedLecture.getLectureId(),
+                savedLecture.getTitle()
+        );
+
+        lectureResourceClient.createVideo(
+                lectureCreateRequestDto.video(),
+                savedLecture.getLectureId()
+        );
 
         return LectureCreateResponseDto.builder()
                 .lectureId(savedLecture.getLectureId())
@@ -44,11 +57,13 @@ public class LectureService {
                 .price(savedLecture.getPrice())
                 .build();
     }
+
     /**
      * 강의 수정
      */
     @Transactional
-    public LectureUpdateResponseDto update(Long lectureId, String title, String description, Long teacherId, BigDecimal price) {
+    public LectureUpdateResponseDto update(Long teacherId, Long lectureId, String title, String description, BigDecimal price) {
+
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
 
@@ -66,7 +81,7 @@ public class LectureService {
     @Transactional
     public void checkLectureOwner(Long teacherId, Lecture lecture) {
         if (!lecture.getTeacherId().equals(teacherId)) {
-            throw new CustomException(ErrorCode.INVALID_REQUEST);
+            throw new CustomException(ErrorCode.USER_NOT_MATCH);
         }
     }
 
@@ -77,7 +92,10 @@ public class LectureService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new CustomException(ErrorCode.LECTURE_NOT_FOUND));
 
-        return LectureDetailResponseDto.toDto(lecture);
+        String file = lectureResourceClient.getNoteUrl(lecture.getLectureId());
+        String video = lectureResourceClient.getVideoRul(lecture.getLectureId());
+
+        return LectureDetailResponseDto.toDto(lecture, file, video);
     }
 
     /**
