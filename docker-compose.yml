@@ -103,6 +103,36 @@ services:
     networks:
       - neulpoom_network
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.0
+    container_name: es_lecture
+    ports:
+      - "9200:9200"
+    environment:
+      - node.name=es_lecture
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    networks:
+      - neulpoom_network
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.6.0
+    container_name: kibana_lecture
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - neulpoom_network
+    depends_on:
+      - elasticsearch
+
 volumes:
   db_user:
   db_lecture:
@@ -110,6 +140,8 @@ volumes:
   db_payment:
   db_lecture_resource:
   db_order:
+  es_data:
+    driver: local
 
 networks:
   neulpoom_network:
