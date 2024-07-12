@@ -71,6 +71,20 @@ services:
     networks:
       - neulpoom_network
 
+  db_neulpoom_order:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: neulpoom_order
+    ports:
+      - "3312:3306"
+    volumes:
+      - db_order:/var/lib/mysql
+      - ./mysql-init/order:/docker-entrypoint-initdb.d
+    restart: always
+    networks:
+      - neulpoom_network
+
   redis_user:
     hostname: redis_user
     container_name: redis_user
@@ -125,6 +139,7 @@ volumes:
   db_coupon:
   db_payment:
   db_lecture_resource:
+  db_order:
   es_data:
     driver: local
 

@@ -57,6 +57,11 @@ public class FilterConfig {
                                 .rewritePath("/api/v1/lectures/(?<segment>.*)", "/api/v1/lectures/${segment}"))
                         .uri("http://localhost:8082"))
 
+                .route(r -> r.path("/api/v1/orders/**")
+                        .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config()))
+                                .rewritePath("/api/v1/orders/(?<segment>.*)", "/api/v1/orders/${segment}"))
+                        .uri("http://localhost:8086"))
+
                 .route(r -> r.path("/module_user/auth/**")
                         .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config()))
                                 .rewritePath("/module_user/auth/(?<segment>.*)", "/api/v1/${segment}"))
