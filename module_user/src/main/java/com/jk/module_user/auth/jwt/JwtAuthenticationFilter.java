@@ -70,7 +70,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write("JWT 토큰 발급 성공");
+        response.getWriter().write("JWT token issued");
         response.getWriter().flush();
     }
 
