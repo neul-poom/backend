@@ -143,7 +143,7 @@
 
 
 # API 명세서
-- 보러가기
+- [[보러가기]](https://documenter.getpostman.com/view/28398906/2sA3kSn2om)
 
 # ERD
 ![ERD image](./img/erd.png)
