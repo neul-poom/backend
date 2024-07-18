@@ -19,6 +19,11 @@ public class LikeController {
     public ResponseEntity<ApiResponseDto<LikeResponseDto>> toggleLike(@PathVariable(name = "lectureId") Long lectureId,
                                                                    @RequestBody LikeRequestDto request) {
         LikeResponseDto responseDto = likeService.toggleLike(request.userId(), lectureId);
-        return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "좋아요 토글 성공", responseDto));
+        if (responseDto.liked()) {
+            return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "좋아요 성공", responseDto));
+        } else {
+            return ResponseEntity.ok(new ApiResponseDto<>(HttpStatus.OK, "좋아요 취소 성공", responseDto));
+        }
+
     }
 }
