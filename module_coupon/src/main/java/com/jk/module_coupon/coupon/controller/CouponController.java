@@ -66,7 +66,7 @@ public class CouponController {
     @DeleteMapping("/{couponId}")
     public ResponseEntity<ApiResponseDto<Void>> deleteCoupon(@PathVariable Long couponId) {
         couponService.deleteCoupon(couponId);
-        return ResponseEntity.ok().body(new ApiResponseDto<>(HttpStatus.OK, "강의가 삭제됐습니다.", null));
+        return ResponseEntity.ok().body(new ApiResponseDto<>(HttpStatus.OK, "쿠폰이 삭제됐습니다.", null));
     }
 
     /**
