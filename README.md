@@ -150,8 +150,8 @@
 
 # 프로젝트 기록
 - msa 구조 채택 이유 [보러가기]
-- FeignClient 선택 이유 [보러가기]
-- AWS S3 연결하기 [보러가기]
+- FeignClient 선택 이유 [[보러가기]](https://cod2048.tistory.com/44)
+- AWS S3 연결하기 [[보러가기]](https://cod2048.tistory.com/43)
 - Redis로 이메일 인증 구현하기 [보러가기]
 
 # 트러블 슈팅
