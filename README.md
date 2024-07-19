@@ -127,7 +127,7 @@
 5. 각 모듈 실행
 
 # 프로젝트 구조
-- 사진 첨부
+![Architecture image](./img/architecture.png)
 
 - 패키지 구조
 
