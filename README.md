@@ -149,12 +149,12 @@
 
 
 ## 프로젝트 기록 ✏️
-- msa 구조 채택 이유 [블로그 이동]
+- MSA 구조 채택 이유 [[블로그 이동]](https://developer-jinnie.tistory.com/65)
 - FeignClient 선택 이유 [[블로그 이동]](https://cod2048.tistory.com/43)
 - AWS S3 연결하기 [[블로그 이동]](https://cod2048.tistory.com/44)
-- Redis로 이메일 인증 구현하기 [블로그 이동]
+- Redis로 이메일 인증 구현하기 [[블로그 이동]](https://easyxun.tistory.com/21)
 
 ## 트러블 슈팅 🎇
 - 선착순 쿠폰 동시성 문제 [블로그 이동]
 - 좋아요 동시성 문제 [블로그 이동]
-- msa 구조에 적합한 api gateway 인증/인가 처리 [블로그 이동]
+- MSA 구조에 적합한 api gateway 인증/인가 처리 [[블로그 이동]](https://easyxun.tistory.com/22)
