@@ -155,6 +155,6 @@
 - Redis로 이메일 인증 구현하기 [[블로그 이동]](https://easyxun.tistory.com/21)
 
 ## 트러블 슈팅 🎇
-- 선착순 쿠폰 동시성 문제 [블로그 이동]
-- 좋아요 동시성 문제 [블로그 이동]
+- 선착순 쿠폰 동시성 문제(1/2) [[블로그 이동]](https://developer-jinnie.tistory.com/71)
+- 선착순 쿠폰 동시성 문제(2/2) [[블로그 이동]](https://developer-jinnie.tistory.com/72)
 - MSA 구조에 적합한 api gateway 인증/인가 처리 [[블로그 이동]](https://easyxun.tistory.com/22)
